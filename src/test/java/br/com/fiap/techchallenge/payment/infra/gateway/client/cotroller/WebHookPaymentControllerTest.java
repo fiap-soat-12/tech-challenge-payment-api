@@ -65,7 +65,7 @@ class WebHookPaymentControllerTest {
 	@Test
 	@DisplayName("Should Not Update Payment Status When Data ID or Type Does Not Match")
 	void shouldNotUpdatePaymentStatusWhenDataIdOrTypeDoesNotMatch() throws Exception {
-        dataId = "67847869771";
+		dataId = "67847869771";
 
 		mockMvc
 			.perform(post(baseUrl).param("data.id", dataId)
