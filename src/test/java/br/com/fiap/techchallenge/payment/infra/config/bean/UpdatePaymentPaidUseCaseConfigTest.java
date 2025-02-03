@@ -3,6 +3,7 @@ package br.com.fiap.techchallenge.payment.infra.config.bean;
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.application.usecase.payment.impl.UpdatePaymentPaidUseCaseImpl;
+import br.com.fiap.techchallenge.payment.infra.gateway.producer.OrderStatusUpdateProducer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,10 @@ class UpdatePaymentPaidUseCaseConfigTest {
 	PaymentPersistence persistence;
 
 	@Mock
-	PaymentClient paymentClient;
+	PaymentClient client;
+
+	@Mock
+	OrderStatusUpdateProducer producer;
 
 	@InjectMocks
 	private UpdatePaymentPaidUseCaseConfig updatePaymentPaidUseCaseConfig;
@@ -29,11 +33,13 @@ class UpdatePaymentPaidUseCaseConfigTest {
 	@DisplayName("Should Create a Singleton Instance Of UpdatePaymentPaidUseCaseImpl")
 	void shouldCreateSingletonInstanceOfCreatePaymentUseCaseImpl() {
 		var updatePaymentPaidUseCaseImpl = updatePaymentPaidUseCaseConfig.updatePaymentPaidUseCaseImpl(persistence,
-				paymentClient);
+				client, producer);
 
 		assertNotNull(updatePaymentPaidUseCaseImpl);
 		assertNotNull(persistence);
-		assertNotNull(paymentClient);
+		assertNotNull(client);
+		assertNotNull(producer);
+		assertNotNull(updatePaymentPaidUseCaseConfig);
 		assertInstanceOf(UpdatePaymentPaidUseCaseImpl.class, updatePaymentPaidUseCaseImpl);
 	}
 

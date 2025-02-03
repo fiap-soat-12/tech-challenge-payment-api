@@ -50,7 +50,7 @@ class WebHookPaymentControllerTest {
 	@Test
 	@DisplayName("Should Handle Webhook and Update Payment Status")
 	void shouldHandleWebhookAndUpdatePaymentStatus() throws Exception {
-		assertDoesNotThrow(() -> updatePaymentPaidUseCase.updateStatusByPaymentDataId(anyString()));
+		assertDoesNotThrow(() -> updatePaymentPaidUseCase.updatePaymentByDataId(anyString()));
 
 		mockMvc
 			.perform(post(baseUrl).param("data.id", dataId)
@@ -59,12 +59,28 @@ class WebHookPaymentControllerTest {
 				.content(asJsonString(webHookPaymentRequest)))
 			.andExpect(status().isNoContent());
 
-		verify(updatePaymentPaidUseCase, times(2)).updateStatusByPaymentDataId(anyString());
+		verify(updatePaymentPaidUseCase, times(2)).updatePaymentByDataId(anyString());
 	}
 
 	@Test
-	@DisplayName("Should Not Update Payment Status When Data ID or Type Does Not Match")
-	void shouldNotUpdatePaymentStatusWhenDataIdOrTypeDoesNotMatch() throws Exception {
+	@DisplayName("Should Not Update Payment Status When Data ID and Type Does Not Match")
+	void shouldNotUpdatePaymentStatusWhenDataIdAndTypeDoesNotMatch() throws Exception {
+		dataId = "67847869771";
+		type = "payment.type";
+
+		mockMvc
+			.perform(post(baseUrl).param("data.id", dataId)
+				.param("type", type)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(webHookPaymentRequest)))
+			.andExpect(status().isNoContent());
+
+		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
+	}
+
+	@Test
+	@DisplayName("Should Not Update Payment Status When Data ID Does Not Match")
+	void shouldNotUpdatePaymentStatusWhenDataIdDoesNotMatch() throws Exception {
 		dataId = "67847869771";
 
 		mockMvc
@@ -74,7 +90,22 @@ class WebHookPaymentControllerTest {
 				.content(asJsonString(webHookPaymentRequest)))
 			.andExpect(status().isNoContent());
 
-		verify(updatePaymentPaidUseCase, never()).updateStatusByPaymentDataId(anyString());
+		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
+	}
+
+	@Test
+	@DisplayName("Should Not Update Payment Status When Type Does Not Match")
+	void shouldNotUpdatePaymentStatusWhenTypeDoesNotMatch() throws Exception {
+		type = "payment.type";
+
+		mockMvc
+			.perform(post(baseUrl).param("data.id", dataId)
+				.param("type", type)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(webHookPaymentRequest)))
+			.andExpect(status().isNoContent());
+
+		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
 	}
 
 	private void buildArranges() {
