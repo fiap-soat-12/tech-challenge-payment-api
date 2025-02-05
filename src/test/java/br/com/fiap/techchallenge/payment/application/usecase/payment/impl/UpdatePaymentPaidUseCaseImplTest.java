@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.payment.application.usecase.payment.impl;
 
+import br.com.fiap.techchallenge.payment.application.exceptions.DoesNotExistException;
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
@@ -81,6 +82,24 @@ class UpdatePaymentPaidUseCaseImplTest {
 		verify(persistence).findByExternalPaymentId(any(UUID.class));
 		verify(persistence).update(any(Payment.class));
 		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
+	}
+
+	@Test
+	@DisplayName("Should not update payment when not found")
+	void shouldNotUpdatePaymentWhenNotFound() {
+		paymentStatusClientDTO = new PaymentStatusClientDTO(externalPaymentId.toString(), paymentClientId,
+				paymentClientStatus);
+
+		when(client.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
+		when(persistence.findByExternalPaymentId(any(UUID.class))).thenReturn(Optional.empty());
+
+		DoesNotExistException exception = assertThrows(DoesNotExistException.class,
+				() -> updatePaymentPaidUseCase.updatePaymentByDataId(dataId));
+
+		assertEquals("Payment does no exist!", exception.getMessage());
+
+		verify(client).verifyPayment(anyString());
+		verify(persistence).findByExternalPaymentId(any(UUID.class));
 	}
 
 	@Test
