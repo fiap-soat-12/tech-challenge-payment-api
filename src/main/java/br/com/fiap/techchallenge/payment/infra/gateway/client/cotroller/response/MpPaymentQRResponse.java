@@ -10,6 +10,14 @@ public class MpPaymentQRResponse {
 	@JsonProperty("qr_data")
 	private String qrData;
 
+	public MpPaymentQRResponse() {
+	}
+
+	public MpPaymentQRResponse(String inStoreOrderId, String qrData) {
+		this.inStoreOrderId = inStoreOrderId;
+		this.qrData = qrData;
+	}
+
 	public String getInStoreOrderId() {
 		return inStoreOrderId;
 	}

@@ -4,6 +4,8 @@ import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClien
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.dto.PaymentStatusClientDTO;
+import br.com.fiap.techchallenge.payment.infra.gateway.producer.OrderStatusUpdateProducer;
+import br.com.fiap.techchallenge.payment.infra.gateway.producer.dto.OrderStatusUpdateDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,14 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UpdatePaymentPaidUseCaseImplTest {
@@ -30,7 +32,10 @@ class UpdatePaymentPaidUseCaseImplTest {
 	private PaymentPersistence persistence;
 
 	@Mock
-	private PaymentClient paymentClient;
+	private PaymentClient client;
+
+	@Mock
+	private OrderStatusUpdateProducer producer;
 
 	@InjectMocks
 	private UpdatePaymentPaidUseCaseImpl updatePaymentPaidUseCase;
@@ -59,19 +64,23 @@ class UpdatePaymentPaidUseCaseImplTest {
 		paymentStatusClientDTO = new PaymentStatusClientDTO(externalPaymentId.toString(), paymentClientId,
 				paymentClientStatus);
 
-		when(paymentClient.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
+		when(client.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
 		when(persistence.findByExternalPaymentId(any(UUID.class))).thenReturn(Optional.of(payment));
 
 		payment.setIsPaid(true);
 
 		when(persistence.update(any(Payment.class))).thenReturn(payment);
 
-		updatePaymentPaidUseCase.updateStatusByPaymentDataId(dataId);
+		assertDoesNotThrow(
+				() -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
+
+		updatePaymentPaidUseCase.updatePaymentByDataId(dataId);
 
 		assertTrue(payment.isPaid());
-		verify(paymentClient).verifyPayment(anyString());
+		verify(client).verifyPayment(anyString());
 		verify(persistence).findByExternalPaymentId(any(UUID.class));
 		verify(persistence).update(any(Payment.class));
+		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
 	}
 
 	@Test
@@ -81,14 +90,29 @@ class UpdatePaymentPaidUseCaseImplTest {
 		paymentStatusClientDTO = new PaymentStatusClientDTO(externalPaymentId.toString(), paymentClientId,
 				paymentClientStatus);
 
-		when(paymentClient.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
+		when(client.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
 		when(persistence.findByExternalPaymentId(any(UUID.class))).thenReturn(Optional.of(payment));
 
-		updatePaymentPaidUseCase.updateStatusByPaymentDataId(dataId);
+		updatePaymentPaidUseCase.updatePaymentByDataId(dataId);
 
 		assertFalse(payment.isPaid());
-		verify(paymentClient).verifyPayment(anyString());
+		verify(client).verifyPayment(anyString());
 		verify(persistence).findByExternalPaymentId(any(UUID.class));
+	}
+
+	@Test
+	@DisplayName("Should Update Order Status")
+	void shouldUpdateOrderStatus() {
+		when(persistence.findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
+
+		assertDoesNotThrow(
+				() -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
+
+		updatePaymentPaidUseCase.updateOrderStatus();
+
+		assertFalse(payment.isPaid());
+		verify(persistence).findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class));
+		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
 	}
 
 	private void buildArranges() {

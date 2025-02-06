@@ -2,7 +2,7 @@ package br.com.fiap.techchallenge.payment.application.usecase.payment.impl;
 
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
-import br.com.fiap.techchallenge.payment.application.usecase.payment.dto.PaymentOrderCreateDTO;
+import br.com.fiap.techchallenge.payment.application.usecase.payment.dto.PaymentCreateDTO;
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.dto.PaymentClientDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ class CreatePaymentUseCaseImplTest {
 
 	private Payment payment;
 
-	private PaymentOrderCreateDTO paymentOrderCreateDTO;
+	private PaymentCreateDTO paymentCreateDTO;
 
 	@BeforeEach
 	void setUp() {
@@ -51,7 +51,7 @@ class CreatePaymentUseCaseImplTest {
         when(paymentClient.generateQrCode(any(PaymentClientDTO.class))).thenReturn(qrCode);
         when(persistence.create(any(Payment.class))).thenReturn(payment);
 
-        var result = createPaymentUseCase.create(paymentOrderCreateDTO);
+        var result = createPaymentUseCase.create(paymentCreateDTO);
 
         assertNotNull(result);
         assertEquals(payment.getOrderId(), result.getOrderId());
@@ -73,7 +73,7 @@ class CreatePaymentUseCaseImplTest {
 		var externalPaymentId = UUID.randomUUID();
 
 		payment = Payment.create(totalAmount, externalPaymentId, qrCode, orderId);
-		paymentOrderCreateDTO = new PaymentOrderCreateDTO(orderId, totalAmount);
+		paymentCreateDTO = new PaymentCreateDTO(orderId, totalAmount);
 	}
 
 }

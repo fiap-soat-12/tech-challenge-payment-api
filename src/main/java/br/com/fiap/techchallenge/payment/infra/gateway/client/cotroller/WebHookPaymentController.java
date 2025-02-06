@@ -21,7 +21,7 @@ public class WebHookPaymentController implements WebhookPaymentControllerOpenApi
 	public ResponseEntity<Void> handleWebhook(@RequestParam("data.id") String dataId, @RequestParam("type") String type,
 			@RequestBody WebHookPaymentRequest request) {
 		if (dataId.equals(request.data().id()) && type.equals(request.type())) {
-			updatePaymentPaidUseCase.updateStatusByPaymentDataId(dataId);
+			updatePaymentPaidUseCase.updatePaymentByDataId(dataId);
 		}
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

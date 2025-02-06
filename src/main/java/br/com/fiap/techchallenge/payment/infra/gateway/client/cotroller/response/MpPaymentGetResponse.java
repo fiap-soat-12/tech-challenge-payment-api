@@ -40,6 +40,26 @@ public class MpPaymentGetResponse {
 	@JsonProperty("transaction_amount")
 	private Double transactionAmount;
 
+	public MpPaymentGetResponse() {
+	}
+
+	public MpPaymentGetResponse(String dateApproved, String dateCreated, String dateLastUpdated, String description,
+			String externalReference, Long id, String paymentMethodId, String paymentTypeId, String status,
+			String statusDetail, String storeId, Double transactionAmount) {
+		this.dateApproved = dateApproved;
+		this.dateCreated = dateCreated;
+		this.dateLastUpdated = dateLastUpdated;
+		this.description = description;
+		this.externalReference = externalReference;
+		this.id = id;
+		this.paymentMethodId = paymentMethodId;
+		this.paymentTypeId = paymentTypeId;
+		this.status = status;
+		this.statusDetail = statusDetail;
+		this.storeId = storeId;
+		this.transactionAmount = transactionAmount;
+	}
+
 	public String getDateApproved() {
 		return dateApproved;
 	}

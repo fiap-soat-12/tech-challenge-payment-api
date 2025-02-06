@@ -1,4 +1,4 @@
-package br.com.fiap.techchallenge.payment.infra.config.bean;
+package br.com.fiap.techchallenge.payment.infra.config.database;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
