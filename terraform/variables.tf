@@ -12,13 +12,13 @@ variable "eks_cluster_name" {
 
 variable "ecr_repository_name" {
     type = string
-    default = "tech-challenge-payment-app"
+    default = "tech-challenge-payment-api"
     description = "AWS ECR repository name"
 }
 
 variable "server_port" {
     type = number
-    default = 8000
+    default = 8100
     description = "Payment App server port"
 }
 

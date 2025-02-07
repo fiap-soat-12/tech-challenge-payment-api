@@ -25,10 +25,10 @@ resource "kubernetes_secret" "payment_secret" {
 
 resource "kubernetes_deployment" "payment_deployment" {
   metadata {
-    name      = "tech-challenge-payment-app"
+    name      = "tech-challenge-payment-api"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
     labels = {
-      app = "tech-challenge-payment-app"
+      app = "tech-challenge-payment-api"
     }
   }
 
@@ -37,21 +37,22 @@ resource "kubernetes_deployment" "payment_deployment" {
 
     selector {
       match_labels = {
-        app = "tech-challenge-payment-app"
+        app = "tech-challenge-payment-api"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "tech-challenge-payment-app"
+          app = "tech-challenge-payment-api"
         }
       }
 
       spec {
         container {
-          image             = data.aws_ecr_image.latest_image.image_uri
-          name              = "tech-challenge-payment-app"
+          # image             = data.aws_ecr_image.latest_image.image_uri
+          image             = "willosouza/tech-challenge-payment-api:latest"
+          name              = "tech-challenge-payment-api"
           image_pull_policy = "Always"
 
           resources {
@@ -126,23 +127,46 @@ resource "kubernetes_deployment" "payment_deployment" {
               }
             }
           }
+
+          env {
+            name  = "SQS_QUEUE_PAYMENT_ORDER_CREATE_CONSUMER"
+            value = "payment-order-create-queue"
+          }
+
+          env {
+            name  = "SQS_QUEUE_ORDER_STATUS_UPDATE_PRODUCER"
+            value = data.aws_sqs_queue.payment_order_create_queue.url
+          }
+
+          env {
+            name  = "AWS_REGION"
+            value = "us-east-1"
+          }
         }
       }
     }
   }
 
+  timeouts {
+    create = "4m"
+    update = "4m"
+    delete = "4m"
+  }
+
   depends_on = [kubernetes_secret.payment_secret]
+
+
 }
 
 resource "kubernetes_service" "payment_service" {
   metadata {
-    name      = "tech-challenge-payment-app-service"
+    name      = "tech-challenge-payment-api-service"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
   }
 
   spec {
     selector = {
-      app = "tech-challenge-payment-app"
+      app = "tech-challenge-payment-api"
     }
 
     port {
@@ -156,7 +180,7 @@ resource "kubernetes_service" "payment_service" {
 
 resource "kubernetes_ingress_v1" "payment_ingress" {
   metadata {
-    name      = "tech-challenge-payment-ingress"
+    name      = "tech-challenge-payment-api-ingress"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
 
     annotations = {
@@ -176,7 +200,7 @@ resource "kubernetes_ingress_v1" "payment_ingress" {
 
           backend {
             service {
-              name = "tech-challenge-payment-app-service"
+              name = "tech-challenge-payment-api-service"
               port {
                 number = var.server_port
               }
@@ -193,7 +217,7 @@ resource "kubernetes_ingress_v1" "payment_ingress" {
 
 resource "kubernetes_horizontal_pod_autoscaler_v2" "payment_hpa" {
   metadata {
-    name      = "tech-challenge-payment-hpa"
+    name      = "tech-challenge-payment-api-hpa"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
   }
 
@@ -201,7 +225,7 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "payment_hpa" {
     scale_target_ref {
       api_version = "apps/v1"
       kind        = "Deployment"
-      name        = "tech-challenge-payment-app"
+      name        = "tech-challenge-payment-api"
     }
 
     min_replicas = 1
