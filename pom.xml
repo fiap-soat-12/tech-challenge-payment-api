@@ -9,9 +9,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>br.com.fiap.techchallenge</groupId>
-	<artifactId>payment</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>payment</name>
+	<artifactId>tech-challenge-payment-api</artifactId>
+	<version>1.0.0</version>
+	<name>tech-challenge-payment-api</name>
 	<packaging>jar</packaging>
 	<description>FIAP SOAT Tech Challenge APP - Payment API</description>
 	<url/>
