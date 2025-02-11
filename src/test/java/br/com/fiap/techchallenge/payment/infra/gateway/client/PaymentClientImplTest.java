@@ -70,7 +70,7 @@ class PaymentClientImplTest {
 	}
 
 	@Test
-    @DisplayName("Should Verify Payment Successfully")
+	@DisplayName("Should Verify Payment Successfully")
     void shouldVerifyPaymentSuccessfully() {
         when(paymentClientController.getPayment(dataId)).thenReturn(mpPaymentGetResponse);
 

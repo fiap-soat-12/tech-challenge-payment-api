@@ -12,6 +12,6 @@ public interface PaymentRepository {
 
 	Optional<PaymentEntity> findByExternalPaymentId(UUID externalPaymentId);
 
-	List<PaymentEntity> findByPaidIsFalseAndCreatedAtBefore(LocalDateTime createdAt);
+	List<PaymentEntity> findByPaidIsNullAndCreatedAtBefore(LocalDateTime createdAt);
 
 }

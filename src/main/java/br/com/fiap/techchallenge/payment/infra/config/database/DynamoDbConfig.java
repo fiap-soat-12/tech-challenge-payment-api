@@ -11,7 +11,10 @@ public class DynamoDbConfig {
 
 	@Bean
 	public DynamoDbClient dynamoDbClient() {
-		return DynamoDbClient.builder().region(Region.US_EAST_1).build();
+		return DynamoDbClient.builder()
+			// .endpointOverride(URI.create("https://localhost.localstack.cloud:4566"))
+			.region(Region.US_EAST_1)
+			.build();
 	}
 
 }

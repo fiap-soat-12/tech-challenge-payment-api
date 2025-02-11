@@ -47,8 +47,8 @@ public class PaymentPersistenceImpl implements PaymentPersistence {
 	}
 
 	@Override
-	public List<Payment> findByPaidIsFalseAndCreatedAtBefore(LocalDateTime createdAt) {
-		var orderFound = repository.findByPaidIsFalseAndCreatedAtBefore(createdAt);
+	public List<Payment> findByPaidIsNullAndCreatedAtBefore(LocalDateTime createdAt) {
+		var orderFound = repository.findByPaidIsNullAndCreatedAtBefore(createdAt);
 		return orderFound.stream().map(PaymentEntity::toPayment).toList();
 	}
 

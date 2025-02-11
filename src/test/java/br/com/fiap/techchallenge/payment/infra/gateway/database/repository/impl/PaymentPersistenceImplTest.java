@@ -129,25 +129,25 @@ class PaymentPersistenceImplTest {
 	void shouldReturnListOfPaymentsWhenThePainIsFalseAndCreatedAtIsLessThanNow() {
 		var paymentEntities = List.of(paymentEntity, paymentEntity);
 
-		when(repository.findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(paymentEntities);
+		when(repository.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(paymentEntities);
 
-		var result = paymentPersistence.findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt());
+		var result = paymentPersistence.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
 
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		verify(repository).findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt());
+		verify(repository).findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
 	}
 
 	@Test
     @DisplayName("Should return list of payments empty when the pain is false and createdAt is Less than now")
     void shouldReturnListOfPaymentsEmptyWhenThePainIsFalseAndCreatedAtIsLessThanNow() {
-        when(repository.findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(List.of());
+        when(repository.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(List.of());
 
-        var result = paymentPersistence.findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt());
+        var result = paymentPersistence.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(repository).findByPaidIsFalseAndCreatedAtBefore(payment.getCreatedAt());
+        verify(repository).findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
     }
 
 	private void buildArranges() {

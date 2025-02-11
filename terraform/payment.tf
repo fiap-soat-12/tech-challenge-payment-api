@@ -16,6 +16,9 @@ resource "kubernetes_secret" "payment_secret" {
 
   data = {
     db-table = var.dynamo_db_name
+    aws_access_key_id = var.AWS_ACCESS_KEY_ID
+    aws_secret_access_key = var.AWS_SECRET_ACCESS_KEY
+    aws_session_token = var.AWS_SESSION_TOKEN
   }
 
   type = "Opaque"
@@ -51,7 +54,7 @@ resource "kubernetes_deployment" "payment_deployment" {
       spec {
         container {
           # image             = data.aws_ecr_image.latest_image.image_uri
-          image             = "willosouza/tech-challenge-payment-api:latest"
+          image             = "jskrc/tech-challenge-payment-api:latest"
           name              = "tech-challenge-payment-api"
           image_pull_policy = "Always"
 
@@ -68,7 +71,7 @@ resource "kubernetes_deployment" "payment_deployment" {
 
           liveness_probe {
             http_get {
-              path = "/api/actuator/health"
+              path = "/payment/actuator/health"
               port = var.server_port
             }
             initial_delay_seconds = 60
@@ -79,7 +82,7 @@ resource "kubernetes_deployment" "payment_deployment" {
 
           readiness_probe {
             http_get {
-              path = "/api/actuator/health"
+              path = "/payment/actuator/health"
               port = var.server_port
             }
             initial_delay_seconds = 60
@@ -135,11 +138,41 @@ resource "kubernetes_deployment" "payment_deployment" {
 
           env {
             name  = "SQS_QUEUE_ORDER_STATUS_UPDATE_PRODUCER"
-            value = data.aws_sqs_queue.payment_order_create_queue.url
+            value = data.aws_sqs_queue.order-status-update-queue.url
           }
 
           env {
-            name  = "AWS_REGION"
+            name = "AWS_ACCESS_KEY_ID"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_access_key_id"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_SECRET_ACCESS_KEY"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_secret_access_key"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_SESSION_TOKEN"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_session_token"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_REGION"
             value = "us-east-1"
           }
         }

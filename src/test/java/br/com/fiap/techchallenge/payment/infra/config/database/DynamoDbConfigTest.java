@@ -18,7 +18,7 @@ class DynamoDbConfigTest {
 
 	@Test
 	@DisplayName("Should Create a Singleton Instance Of DynamoDbClient")
-	void shouldCreateSingletonInstanceOfCreatePaymentUseCaseImpl() {
+	void shouldCreateSingletonInstanceOfDynamoDbClient() {
 		var dynamoDbClient = dynamoDbConfig.dynamoDbClient();
 
 		assertNotNull(dynamoDbClient);

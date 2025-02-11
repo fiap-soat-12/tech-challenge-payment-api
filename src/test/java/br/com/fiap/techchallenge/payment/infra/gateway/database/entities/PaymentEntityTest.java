@@ -31,7 +31,7 @@ class PaymentEntityTest {
 		assertNotNull(paymentEntity);
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
-		assertTrue(paymentEntity.isPaid());
+		assertNull(paymentEntity.isPaid());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -47,7 +47,7 @@ class PaymentEntityTest {
 		assertNotNull(paymentEntity);
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
-		assertTrue(paymentEntity.isPaid());
+		assertNull(paymentEntity.isPaid());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -64,7 +64,7 @@ class PaymentEntityTest {
 		assertNotNull(newPayment);
 		assertEquals(paymentEntity.getId(), newPayment.getId());
 		assertEquals(paymentEntity.getAmount(), newPayment.getAmount());
-		assertTrue(newPayment.isPaid());
+		assertNull(paymentEntity.isPaid());
 		assertEquals(paymentEntity.getExternalPaymentId(), newPayment.getExternalPaymentId());
 		assertEquals(paymentEntity.getQr(), newPayment.getQr());
 		assertEquals(paymentEntity.getOrderId(), newPayment.getOrderId());
@@ -72,8 +72,32 @@ class PaymentEntityTest {
 		assertEquals(paymentEntity.getUpdatedAt(), newPayment.getUpdatedAt());
 	}
 
+	@Test
+	@DisplayName("Should return Payment attributes as the object was created by the Set Payment Entity")
+	void shouldReturnPaymentAttributesAsTheObjectWasCreatedByTheSetPaymentEntity() {
+		paymentEntity = new PaymentEntity();
+		paymentEntity.setId(payment.getId());
+		paymentEntity.setAmount(payment.getAmount());
+		paymentEntity.setPaid(payment.isPaid());
+		paymentEntity.setExternalPaymentId(payment.getExternalPaymentId());
+		paymentEntity.setQr(payment.getQr());
+		paymentEntity.setOrderId(payment.getOrderId());
+		paymentEntity.setCreatedAt(payment.getCreatedAt());
+		paymentEntity.setUpdatedAt(payment.getUpdatedAt());
+
+		assertNotNull(paymentEntity);
+		assertEquals(payment.getId(), paymentEntity.getId());
+		assertEquals(payment.getAmount(), paymentEntity.getAmount());
+		assertNull(paymentEntity.isPaid());
+		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
+		assertEquals(payment.getQr(), paymentEntity.getQr());
+		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
+		assertEquals(payment.getCreatedAt(), paymentEntity.getCreatedAt());
+		assertNotNull(paymentEntity.getUpdatedAt());
+	}
+
 	private void buildArranges() {
-		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), true, UUID.randomUUID(), "QR Code",
+		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), null, UUID.randomUUID(), "QR Code",
 				UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now());
 	}
 

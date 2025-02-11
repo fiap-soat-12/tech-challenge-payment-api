@@ -24,6 +24,21 @@ variable "server_port" {
 
 variable "dynamo_db_name" {
   type        = string
-  default     = "tc_payment_db"
+  default     = "payment_entity"
   description = "Dynamo DB Table name"
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+  type = string
+  description = "aws_access_key_id"
+}
+
+variable "AWS_SECRET_ACCESS_KEY" {
+  type = string
+  description = "aws_secret_access_key"
+}
+
+variable "AWS_SESSION_TOKEN" {
+  type = string
+  description = "aws_session_token"
 }

@@ -29,7 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<sonar.coverage.exclusions>**/openapi/**, **/scheduler/**, **/PaymentClientConfig.java, **/MpPaymentQRRequest.java</sonar.coverage.exclusions>
+		<sonar.coverage.exclusions>**/openapi/**, **/scheduler/**, **/PaymentApplication.java, **/PaymentClientConfig.java, **/MpPaymentQRRequest.java</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,17 +46,16 @@
 		</dependency>
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
-			<artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
-			<version>3.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>sts</artifactId>
-			<version>2.26.25</version>
+			<artifactId>spring-cloud-aws-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-aws-starter-sqs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.awspring.cloud</groupId>
+			<artifactId>spring-cloud-aws-starter-dynamodb</artifactId>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -154,6 +153,7 @@
 					<excludes>
 						<exclude>**/openapi/**</exclude>
 						<exclude>**/scheduler/**</exclude>
+						<exclude>**/PaymentApplication.class</exclude>
 						<exclude>**/PaymentClientConfig.class</exclude>
 						<exclude>**/MpPaymentQRRequest.class</exclude>
 					</excludes>

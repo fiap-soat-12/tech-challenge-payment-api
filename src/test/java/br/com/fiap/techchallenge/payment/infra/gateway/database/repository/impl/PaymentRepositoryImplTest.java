@@ -131,7 +131,7 @@ class PaymentRepositoryImplTest {
 		when(dynamoDbTemplate.scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class)))
 			.thenReturn(paymentPageIterable);
 
-		var result = paymentRepository.findByPaidIsFalseAndCreatedAtBefore(createdAt);
+		var result = paymentRepository.findByPaidIsNullAndCreatedAtBefore(createdAt);
 
 		assertNotNull(result);
 		assertEquals(2, result.size());
@@ -149,7 +149,7 @@ class PaymentRepositoryImplTest {
 		when(dynamoDbTemplate.scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class)))
 			.thenReturn(paymentPageIterable);
 
-		var result = paymentRepository.findByPaidIsFalseAndCreatedAtBefore(createdAt);
+		var result = paymentRepository.findByPaidIsNullAndCreatedAtBefore(createdAt);
 
 		assertTrue(result.isEmpty());
 		verify(dynamoDbTemplate).scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class));

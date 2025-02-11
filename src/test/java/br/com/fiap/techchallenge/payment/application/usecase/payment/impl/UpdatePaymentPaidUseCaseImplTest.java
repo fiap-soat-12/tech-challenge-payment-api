@@ -122,7 +122,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 	@Test
 	@DisplayName("Should Update Order Status")
 	void shouldUpdateOrderStatus() {
-		when(persistence.findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
+		when(persistence.findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
 
 		assertDoesNotThrow(
 				() -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
@@ -130,7 +130,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 		updatePaymentPaidUseCase.updateOrderStatus();
 
 		assertFalse(payment.isPaid());
-		verify(persistence).findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class));
+		verify(persistence).findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class));
 		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
 	}
 

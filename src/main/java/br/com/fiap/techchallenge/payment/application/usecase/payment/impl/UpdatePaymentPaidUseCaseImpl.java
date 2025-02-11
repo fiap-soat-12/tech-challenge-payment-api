@@ -54,9 +54,12 @@ public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 		LocalDateTime thirtyMinutesAgo = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
 			.minusMinutes(30)
 			.toLocalDateTime();
-		List<Payment> paymentsFound = persistence.findByPaidIsFalseAndCreatedAtBefore(thirtyMinutesAgo);
-		paymentsFound
-			.forEach(payment -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
+		List<Payment> paymentsFound = persistence.findByPaidIsNullAndCreatedAtBefore(thirtyMinutesAgo);
+		paymentsFound.forEach(payment -> {
+			payment.setIsPaid(false);
+			persistence.update(payment);
+			producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid()));
+		});
 
 	}
 
