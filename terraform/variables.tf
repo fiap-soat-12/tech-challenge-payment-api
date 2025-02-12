@@ -12,18 +12,33 @@ variable "eks_cluster_name" {
 
 variable "ecr_repository_name" {
     type = string
-    default = "tech-challenge-payment-app"
+    default = "tech-challenge-payment-api"
     description = "AWS ECR repository name"
 }
 
 variable "server_port" {
     type = number
-    default = 8000
+    default = 8100
     description = "Payment App server port"
 }
 
 variable "dynamo_db_name" {
   type        = string
-  default     = "tc_payment_db"
+  default     = "payment_entity"
   description = "Dynamo DB Table name"
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+  type = string
+  description = "aws_access_key_id"
+}
+
+variable "AWS_SECRET_ACCESS_KEY" {
+  type = string
+  description = "aws_secret_access_key"
+}
+
+variable "AWS_SESSION_TOKEN" {
+  type = string
+  description = "aws_session_token"
 }

@@ -29,6 +29,25 @@ jobs:
         run: |
           mvn clean install  # Comando para build e testes com Maven
 
+  scan_sonnar:
+    runs-on: ubuntu-latest
+
+    env:
+      SONAR_PROJECT_KEY: tech-challenge-payment-api
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '21' # Configuração para Java 21
+
+      - name: Rodar análise no SonarQube
+        run: mvn sonar:sonar -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
   # Job para criação e push da imagem Docker para ECR
   build-and-push-ecr:
     name: Build and Push Docker Image to ECR
@@ -85,3 +104,54 @@ jobs:
       - name: Push Docker image to Amazon ECR
         run: |
           docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  # Job para publicação da api
+  publish-api:
+    name: Terraform Verification and Push API
+    runs-on: ubuntu-latest
+    needs: build-and-push-ecr
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      TF_VAR_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      TF_VAR_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
+
+      # Inicializar, validar e aplicar o Terraform para o diretório terraform
+
+      - name: Initialize Terraform for API
+        working-directory: terraform
+        run: terraform init
+
+      - name: Validate Terraform for API
+        working-directory: terraform
+        run: terraform validate
+
+      - name: Plan Terraform for API
+        if: github.ref == 'refs/heads/main' # Executa apenas na branch main
+        working-directory: terraform
+        run: terraform plan -out=tfplan-api
+
+      - name: Apply Terraform for API
+        if: github.ref == 'refs/heads/main' # Executa apenas na branch main
+        working-directory: terraform
+        run: terraform apply -auto-approve tfplan-api

@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.payment.application.usecase.payment.impl;
 
+import br.com.fiap.techchallenge.payment.application.exceptions.ApiClientRequestException;
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.application.usecase.payment.dto.PaymentCreateDTO;
@@ -17,10 +18,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreatePaymentUseCaseImplTest {
@@ -46,25 +45,26 @@ class CreatePaymentUseCaseImplTest {
 	}
 
 	@Test
-    @DisplayName("Should create Payment")
+    @DisplayName("Should Create Payment")
     void shouldCreatePayment() {
         when(paymentClient.generateQrCode(any(PaymentClientDTO.class))).thenReturn(qrCode);
         when(persistence.create(any(Payment.class))).thenReturn(payment);
 
-        var result = createPaymentUseCase.create(paymentCreateDTO);
+		assertDoesNotThrow(() -> createPaymentUseCase.create(paymentCreateDTO));
 
-        assertNotNull(result);
-        assertEquals(payment.getOrderId(), result.getOrderId());
-        assertEquals(payment.getId(), result.getId());
-        assertEquals(payment.getAmount(), result.getAmount());
-        assertEquals(payment.getExternalPaymentId(), result.getExternalPaymentId());
-        assertEquals(payment.getQr(), result.getQr());
-        assertEquals(payment.getOrderId(), result.getOrderId());
-        assertEquals(payment.getCreatedAt(), result.getCreatedAt());
-        assertEquals(payment.getUpdatedAt(), result.getUpdatedAt());
-        verify(paymentClient).generateQrCode(any(PaymentClientDTO.class));
         verify(persistence).create(any(Payment.class));
     }
+
+	@Test
+	@DisplayName("Should Not Create Payment When Not Generate Qr Code")
+	void shouldNotCreatePaymentWhenNotGenerateQrCode() {
+		when(paymentClient.generateQrCode(any(PaymentClientDTO.class))).thenThrow(ApiClientRequestException.class);
+
+		assertThrows(ApiClientRequestException.class,
+				() -> createPaymentUseCase.create(paymentCreateDTO));
+
+		verify(persistence, never()).create(any(Payment.class));
+	}
 
 	private void buildArranges() {
 		qrCode = "QR Code";

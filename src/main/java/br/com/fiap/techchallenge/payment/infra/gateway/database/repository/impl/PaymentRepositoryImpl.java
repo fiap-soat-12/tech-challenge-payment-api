@@ -57,11 +57,11 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 	}
 
 	@Override
-	public List<PaymentEntity> findByPaidIsFalseAndCreatedAtBefore(LocalDateTime createdAt) {
+	public List<PaymentEntity> findByPaidIsNullAndCreatedAtBefore(LocalDateTime createdAt) {
 		ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
 			.filterExpression(Expression.builder()
 				.expression("paid = :paidVal AND createdAt < :createdAtVal")
-				.expressionValues(Map.of(":paidVal", AttributeValue.builder().bool(false).build(), ":createdAtVal",
+				.expressionValues(Map.of(":paidVal", AttributeValue.builder().bool(null).build(), ":createdAtVal",
 						AttributeValue.builder().s(createdAt.toString()).build()))
 				.build())
 			.build();

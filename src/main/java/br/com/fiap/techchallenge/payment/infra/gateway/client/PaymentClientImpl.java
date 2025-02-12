@@ -24,8 +24,8 @@ public class PaymentClientImpl implements PaymentClient {
 
 	@Override
 	public String generateQrCode(PaymentClientDTO dto) {
-		// var notificationUrl = getHostInfo() + "/v1/webhook-payment";
-		var notificationUrl = "https://soat-app.free.beeceptor.com";
+		var notificationUrl = getHostInfo() + "/v1/webhook-payment";
+		// var notificationUrl = "https://soat-app-1.free.beeceptor.com";
 
 		var request = new MpPaymentQRRequest(dto.getDescription(), dto.getExpirationDate(), dto.getExternalReference(),
 				dto.getItems()

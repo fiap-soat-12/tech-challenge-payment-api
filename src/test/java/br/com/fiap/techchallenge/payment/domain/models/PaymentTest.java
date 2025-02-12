@@ -19,7 +19,7 @@ class PaymentTest {
 
 	private BigDecimal amount;
 
-	private boolean isPaid;
+	private Boolean isPaid;
 
 	private UUID externalPaymentId;
 
@@ -59,7 +59,6 @@ class PaymentTest {
 
 		assertNotNull(payment);
 		assertEquals(amount, payment.getAmount());
-		assertFalse(payment.isPaid());
 		assertEquals(externalPaymentId, payment.getExternalPaymentId());
 		assertEquals(qr, payment.getQr());
 		assertEquals(orderId, payment.getOrderId());

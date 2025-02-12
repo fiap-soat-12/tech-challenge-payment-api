@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.payment.application.usecase.payment.impl;
 
+import br.com.fiap.techchallenge.payment.application.exceptions.DoesNotExistException;
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
@@ -84,6 +85,24 @@ class UpdatePaymentPaidUseCaseImplTest {
 	}
 
 	@Test
+	@DisplayName("Should not update payment when not found")
+	void shouldNotUpdatePaymentWhenNotFound() {
+		paymentStatusClientDTO = new PaymentStatusClientDTO(externalPaymentId.toString(), paymentClientId,
+				paymentClientStatus);
+
+		when(client.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
+		when(persistence.findByExternalPaymentId(any(UUID.class))).thenReturn(Optional.empty());
+
+		DoesNotExistException exception = assertThrows(DoesNotExistException.class,
+				() -> updatePaymentPaidUseCase.updatePaymentByDataId(dataId));
+
+		assertEquals("Payment does no exist!", exception.getMessage());
+
+		verify(client).verifyPayment(anyString());
+		verify(persistence).findByExternalPaymentId(any(UUID.class));
+	}
+
+	@Test
 	@DisplayName("Should not update payment when not paid")
 	void shouldNotUpdatePaymentWhenNotPaid() {
 		paymentClientStatus = "unapproved";
@@ -103,7 +122,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 	@Test
 	@DisplayName("Should Update Order Status")
 	void shouldUpdateOrderStatus() {
-		when(persistence.findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
+		when(persistence.findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
 
 		assertDoesNotThrow(
 				() -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
@@ -111,7 +130,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 		updatePaymentPaidUseCase.updateOrderStatus();
 
 		assertFalse(payment.isPaid());
-		verify(persistence).findByPaidIsFalseAndCreatedAtBefore(any(LocalDateTime.class));
+		verify(persistence).findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class));
 		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
 	}
 

@@ -17,12 +17,16 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,9 +118,8 @@ class PaymentClientControllerTest {
 			.setBody("Bad Request")
 			.addHeader("Content-Type", "application/json"));
 
-		ApiClientRequestException exception = assertThrows(ApiClientRequestException.class, () -> {
-			paymentClientController.createQr(mpPaymentQRRequest);
-		});
+		ApiClientRequestException exception = assertThrows(ApiClientRequestException.class,
+				() -> paymentClientController.createQr(mpPaymentQRRequest));
 
 		assertEquals("Request error: Status code 400", exception.getMessage());
 
@@ -133,9 +136,8 @@ class PaymentClientControllerTest {
 			.setBody("Internal Server Error")
 			.addHeader("Content-Type", "application/json"));
 
-		ApiClientRequestException exception = assertThrows(ApiClientRequestException.class, () -> {
-			paymentClientController.getPayment(dataId.toString());
-		});
+		ApiClientRequestException exception = assertThrowsExactly(ApiClientRequestException.class,
+				() -> paymentClientController.getPayment(dataId.toString()));
 
 		assertEquals("Request error: Status code 500", exception.getMessage());
 
@@ -143,6 +145,23 @@ class PaymentClientControllerTest {
 		assertEquals("GET", recordedRequest.getMethod());
 		assertEquals("/get-payment/" + dataId, recordedRequest.getPath());
 		assertEquals("application/json", recordedRequest.getHeader("Content-Type"));
+	}
+
+	@Test
+	@DisplayName("Should Handle IOException and InterruptedException Correctly")
+	void ShouldHandleIOExceptionAndInterruptedExceptionCorrectly() throws IOException, InterruptedException {
+		HttpClient httpClientMock = mock(HttpClient.class);
+		when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+			.thenThrow(new IOException("Network error"));
+
+		paymentClientController = new PaymentClientController(URI.create("http://localhost"), httpClientMock,
+				objectMapper);
+		setField(paymentClientController, "TOKEN", "test-token");
+
+		ApiClientRequestException exception = assertThrows(ApiClientRequestException.class,
+				() -> paymentClientController.getPayment("123"));
+
+		assertEquals("Error executing request: Network error", exception.getMessage());
 	}
 
 	private void buildArranges() {

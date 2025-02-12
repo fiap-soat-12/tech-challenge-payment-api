@@ -16,6 +16,9 @@ resource "kubernetes_secret" "payment_secret" {
 
   data = {
     db-table = var.dynamo_db_name
+    aws_access_key_id = var.AWS_ACCESS_KEY_ID
+    aws_secret_access_key = var.AWS_SECRET_ACCESS_KEY
+    aws_session_token = var.AWS_SESSION_TOKEN
   }
 
   type = "Opaque"
@@ -25,10 +28,10 @@ resource "kubernetes_secret" "payment_secret" {
 
 resource "kubernetes_deployment" "payment_deployment" {
   metadata {
-    name      = "tech-challenge-payment-app"
+    name      = "tech-challenge-payment-api"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
     labels = {
-      app = "tech-challenge-payment-app"
+      app = "tech-challenge-payment-api"
     }
   }
 
@@ -37,21 +40,22 @@ resource "kubernetes_deployment" "payment_deployment" {
 
     selector {
       match_labels = {
-        app = "tech-challenge-payment-app"
+        app = "tech-challenge-payment-api"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "tech-challenge-payment-app"
+          app = "tech-challenge-payment-api"
         }
       }
 
       spec {
         container {
-          image             = data.aws_ecr_image.latest_image.image_uri
-          name              = "tech-challenge-payment-app"
+          # image             = data.aws_ecr_image.latest_image.image_uri
+          image             = "jskrc/tech-challenge-payment-api:latest"
+          name              = "tech-challenge-payment-api"
           image_pull_policy = "Always"
 
           resources {
@@ -67,7 +71,7 @@ resource "kubernetes_deployment" "payment_deployment" {
 
           liveness_probe {
             http_get {
-              path = "/api/actuator/health"
+              path = "/payment/actuator/health"
               port = var.server_port
             }
             initial_delay_seconds = 60
@@ -78,7 +82,7 @@ resource "kubernetes_deployment" "payment_deployment" {
 
           readiness_probe {
             http_get {
-              path = "/api/actuator/health"
+              path = "/payment/actuator/health"
               port = var.server_port
             }
             initial_delay_seconds = 60
@@ -126,23 +130,76 @@ resource "kubernetes_deployment" "payment_deployment" {
               }
             }
           }
+
+          env {
+            name  = "SQS_QUEUE_PAYMENT_ORDER_CREATE_CONSUMER"
+            value = "payment-order-create-queue"
+          }
+
+          env {
+            name  = "SQS_QUEUE_ORDER_STATUS_UPDATE_PRODUCER"
+            value = data.aws_sqs_queue.order-status-update-queue.url
+          }
+
+          env {
+            name = "AWS_ACCESS_KEY_ID"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_access_key_id"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_SECRET_ACCESS_KEY"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_secret_access_key"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_SESSION_TOKEN"
+            value_from {
+              secret_key_ref {
+                name = "tech-challenge-payment-secret"
+                key  = "aws_session_token"
+              }
+            }
+          }
+
+          env {
+            name = "AWS_REGION"
+            value = "us-east-1"
+          }
         }
       }
     }
   }
 
+  timeouts {
+    create = "4m"
+    update = "4m"
+    delete = "4m"
+  }
+
   depends_on = [kubernetes_secret.payment_secret]
+
+
 }
 
 resource "kubernetes_service" "payment_service" {
   metadata {
-    name      = "tech-challenge-payment-app-service"
+    name      = "tech-challenge-payment-api-service"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
   }
 
   spec {
     selector = {
-      app = "tech-challenge-payment-app"
+      app = "tech-challenge-payment-api"
     }
 
     port {
@@ -156,7 +213,7 @@ resource "kubernetes_service" "payment_service" {
 
 resource "kubernetes_ingress_v1" "payment_ingress" {
   metadata {
-    name      = "tech-challenge-payment-ingress"
+    name      = "tech-challenge-payment-api-ingress"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
 
     annotations = {
@@ -176,7 +233,7 @@ resource "kubernetes_ingress_v1" "payment_ingress" {
 
           backend {
             service {
-              name = "tech-challenge-payment-app-service"
+              name = "tech-challenge-payment-api-service"
               port {
                 number = var.server_port
               }
@@ -193,7 +250,7 @@ resource "kubernetes_ingress_v1" "payment_ingress" {
 
 resource "kubernetes_horizontal_pod_autoscaler_v2" "payment_hpa" {
   metadata {
-    name      = "tech-challenge-payment-hpa"
+    name      = "tech-challenge-payment-api-hpa"
     namespace = kubernetes_namespace.payment_namespace.metadata[0].name
   }
 
@@ -201,7 +258,7 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "payment_hpa" {
     scale_target_ref {
       api_version = "apps/v1"
       kind        = "Deployment"
-      name        = "tech-challenge-payment-app"
+      name        = "tech-challenge-payment-api"
     }
 
     min_replicas = 1

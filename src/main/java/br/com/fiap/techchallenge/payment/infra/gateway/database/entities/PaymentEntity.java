@@ -15,7 +15,7 @@ public class PaymentEntity {
 
 	private BigDecimal amount;
 
-	private boolean isPaid;
+	private Boolean isPaid;
 
 	private UUID externalPaymentId;
 
@@ -62,60 +62,60 @@ public class PaymentEntity {
 		return id;
 	}
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
 	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-
-	public boolean isPaid() {
+	public Boolean isPaid() {
 		return isPaid;
-	}
-
-	public void setPaid(boolean isPaid) {
-		this.isPaid = isPaid;
 	}
 
 	public UUID getExternalPaymentId() {
 		return externalPaymentId;
 	}
 
-	public void setExternalPaymentId(UUID externalPaymentId) {
-		this.externalPaymentId = externalPaymentId;
-	}
-
 	public String getQr() {
 		return qr;
-	}
-
-	public void setQr(String qr) {
-		this.qr = qr;
 	}
 
 	public UUID getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(UUID orderId) {
-		this.orderId = orderId;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
-
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public void setPaid(Boolean paid) {
+		isPaid = paid;
+	}
+
+	public void setExternalPaymentId(UUID externalPaymentId) {
+		this.externalPaymentId = externalPaymentId;
+	}
+
+	public void setQr(String qr) {
+		this.qr = qr;
+	}
+
+	public void setOrderId(UUID orderId) {
+		this.orderId = orderId;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {

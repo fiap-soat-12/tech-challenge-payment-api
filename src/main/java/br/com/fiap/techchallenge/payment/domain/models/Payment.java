@@ -10,7 +10,7 @@ public class Payment {
 
 	private final BigDecimal amount;
 
-	private boolean isPaid;
+	private Boolean isPaid;
 
 	private final UUID externalPaymentId;
 
@@ -22,7 +22,7 @@ public class Payment {
 
 	private final LocalDateTime updatedAt;
 
-	public Payment(UUID id, BigDecimal amount, boolean isPaid, UUID externalPaymentId, String qr, UUID orderId,
+	public Payment(UUID id, BigDecimal amount, Boolean isPaid, UUID externalPaymentId, String qr, UUID orderId,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.amount = amount;
@@ -35,7 +35,7 @@ public class Payment {
 	}
 
 	public static Payment create(BigDecimal amount, UUID externalPaymentId, String qr, UUID orderId) {
-		return new Payment(UUID.randomUUID(), amount, false, externalPaymentId, qr, orderId, LocalDateTime.now(),
+		return new Payment(UUID.randomUUID(), amount, null, externalPaymentId, qr, orderId, LocalDateTime.now(),
 				LocalDateTime.now());
 	}
 
@@ -47,7 +47,7 @@ public class Payment {
 		return amount;
 	}
 
-	public boolean isPaid() {
+	public Boolean isPaid() {
 		return isPaid;
 	}
 

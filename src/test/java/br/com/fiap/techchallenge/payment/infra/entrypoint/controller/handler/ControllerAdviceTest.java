@@ -3,6 +3,7 @@ package br.com.fiap.techchallenge.payment.infra.entrypoint.controller.handler;
 import br.com.fiap.techchallenge.payment.application.exceptions.AlreadyExistsException;
 import br.com.fiap.techchallenge.payment.application.exceptions.AlreadyInStatusException;
 import br.com.fiap.techchallenge.payment.application.exceptions.DoesNotExistException;
+import br.com.fiap.techchallenge.payment.application.exceptions.InvalidStatusUpdateException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,6 +61,14 @@ class ControllerAdviceTest {
 		AlreadyInStatusException exception = new AlreadyInStatusException("");
 
 		assertEquals(HttpStatus.CONFLICT, controllerAdvice.alreadyInStatus(exception).getStatusCode());
+	}
+
+	@Test
+	@DisplayName("Should return HTTP Status Conflict when application throws InvalidStatusUpdateException")
+	void handleInvalidStatusUpdate() {
+		InvalidStatusUpdateException exception = new InvalidStatusUpdateException("");
+
+		assertEquals(HttpStatus.CONFLICT, controllerAdvice.invalidStatusUpdate(exception).getStatusCode());
 	}
 
 	@Test
