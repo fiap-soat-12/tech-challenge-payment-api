@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
 @DynamoDbBean
@@ -15,7 +16,9 @@ public class PaymentEntity {
 
 	private BigDecimal amount;
 
-	private Boolean isPaid;
+	private boolean isPaid;
+
+	private PaymentStatusEnum status;
 
 	private UUID externalPaymentId;
 
@@ -34,6 +37,7 @@ public class PaymentEntity {
 		this.id = payment.getId();
 		this.amount = payment.getAmount();
 		this.isPaid = payment.isPaid();
+		this.status = payment.getStatus();
 		this.externalPaymentId = payment.getExternalPaymentId();
 		this.qr = payment.getQr();
 		this.orderId = payment.getOrderId();
@@ -45,6 +49,7 @@ public class PaymentEntity {
 		this.id = payment.getId();
 		this.amount = payment.getAmount();
 		this.isPaid = payment.isPaid();
+		this.status = payment.getStatus();
 		this.externalPaymentId = payment.getExternalPaymentId();
 		this.qr = payment.getQr();
 		this.orderId = payment.getOrderId();
@@ -54,7 +59,7 @@ public class PaymentEntity {
 	}
 
 	public Payment toPayment() {
-		return new Payment(id, amount, isPaid, externalPaymentId, qr, orderId, createdAt, updatedAt);
+		return new Payment(id, amount, isPaid, status, externalPaymentId, qr, orderId, createdAt, updatedAt);
 	}
 
 	@DynamoDbPartitionKey
@@ -66,8 +71,12 @@ public class PaymentEntity {
 		return amount;
 	}
 
-	public Boolean isPaid() {
+	public boolean isPaid() {
 		return isPaid;
+	}
+
+	public PaymentStatusEnum getStatus() {
+		return status;
 	}
 
 	public UUID getExternalPaymentId() {
@@ -98,8 +107,12 @@ public class PaymentEntity {
 		this.amount = amount;
 	}
 
-	public void setPaid(Boolean paid) {
+	public void setPaid(boolean paid) {
 		isPaid = paid;
+	}
+
+	public void setStatus(PaymentStatusEnum status) {
+		this.status = status;
 	}
 
 	public void setExternalPaymentId(UUID externalPaymentId) {

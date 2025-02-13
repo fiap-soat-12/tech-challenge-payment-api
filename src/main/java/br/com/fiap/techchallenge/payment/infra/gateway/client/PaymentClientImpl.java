@@ -50,7 +50,7 @@ public class PaymentClientImpl implements PaymentClient {
 	}
 
 	private String getHostInfo() {
-		return ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+		return ServletUriComponentsBuilder.fromCurrentRequestUri().replacePath(null).toUriString();
 	}
 
 }

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -131,7 +132,7 @@ class PaymentRepositoryImplTest {
 		when(dynamoDbTemplate.scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class)))
 			.thenReturn(paymentPageIterable);
 
-		var result = paymentRepository.findByPaidIsNullAndCreatedAtBefore(createdAt);
+		var result = paymentRepository.findByStatusIsPendingAndCreatedAtBefore(createdAt);
 
 		assertNotNull(result);
 		assertEquals(2, result.size());
@@ -149,14 +150,14 @@ class PaymentRepositoryImplTest {
 		when(dynamoDbTemplate.scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class)))
 			.thenReturn(paymentPageIterable);
 
-		var result = paymentRepository.findByPaidIsNullAndCreatedAtBefore(createdAt);
+		var result = paymentRepository.findByStatusIsPendingAndCreatedAtBefore(createdAt);
 
 		assertTrue(result.isEmpty());
 		verify(dynamoDbTemplate).scan(any(ScanEnhancedRequest.class), eq(PaymentEntity.class));
 	}
 
 	private void buildArranges() {
-		paymentEntity = new PaymentEntity(new Payment(UUID.randomUUID(), new BigDecimal("100.00"), false,
+		paymentEntity = new PaymentEntity(new Payment(UUID.randomUUID(), new BigDecimal("100.00"), false, PENDING,
 				UUID.randomUUID(), "QR Code", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now()));
 	}
 

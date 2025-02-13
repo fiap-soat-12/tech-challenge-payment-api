@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.payment.domain.models;
 
+import br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,6 +22,8 @@ class PaymentTest {
 	private BigDecimal amount;
 
 	private Boolean isPaid;
+
+	private PaymentStatusEnum status;
 
 	private UUID externalPaymentId;
 
@@ -39,7 +43,7 @@ class PaymentTest {
 	@Test
 	@DisplayName("Should return Payment attributes as the object was created by the constructor")
 	void shouldReturnPaymentAttributesAsTheObjectWasCreatedByTheConstructor() {
-		payment = new Payment(id, amount, isPaid, externalPaymentId, qr, orderId, createdAt, updatedAt);
+		payment = new Payment(id, amount, isPaid, status, externalPaymentId, qr, orderId, createdAt, updatedAt);
 
 		assertNotNull(payment);
 		assertEquals(id, payment.getId());
@@ -68,6 +72,7 @@ class PaymentTest {
 		id = UUID.randomUUID();
 		amount = new BigDecimal("100.00");
 		isPaid = true;
+		status = PENDING;
 		externalPaymentId = UUID.randomUUID();
 		qr = "QR Code";
 		orderId = UUID.randomUUID();

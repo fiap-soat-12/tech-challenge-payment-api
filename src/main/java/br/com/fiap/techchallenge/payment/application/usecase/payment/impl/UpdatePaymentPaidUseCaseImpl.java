@@ -16,6 +16,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.FINISHED;
+
 @Transactional
 public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 
@@ -40,7 +42,7 @@ public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 			.orElseThrow(() -> new DoesNotExistException("Payment does no exist!"));
 
 		if (paymentData.getStatus().equals("approved")) {
-			paymentFound.setIsPaid(true);
+			paymentFound.setPaid(true, FINISHED);
 			persistence.update(paymentFound);
 			producer.sendMessage(new OrderStatusUpdateDTO(paymentFound.getOrderId(), paymentFound.isPaid()));
 		}
@@ -54,9 +56,9 @@ public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 		LocalDateTime thirtyMinutesAgo = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
 			.minusMinutes(30)
 			.toLocalDateTime();
-		List<Payment> paymentsFound = persistence.findByPaidIsNullAndCreatedAtBefore(thirtyMinutesAgo);
+		List<Payment> paymentsFound = persistence.findByStatusIsPendingAndCreatedAtBefore(thirtyMinutesAgo);
 		paymentsFound.forEach(payment -> {
-			payment.setIsPaid(false);
+			payment.setStatus(FINISHED);
 			persistence.update(payment);
 			producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid()));
 		});

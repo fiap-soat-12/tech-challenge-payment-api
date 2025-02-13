@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.mercadopago.resources.payment.PaymentStatus.PENDING;
+
 @Repository
 public class PaymentRepositoryImpl implements PaymentRepository {
 
@@ -57,11 +59,11 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 	}
 
 	@Override
-	public List<PaymentEntity> findByPaidIsNullAndCreatedAtBefore(LocalDateTime createdAt) {
+	public List<PaymentEntity> findByStatusIsPendingAndCreatedAtBefore(LocalDateTime createdAt) {
 		ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
 			.filterExpression(Expression.builder()
-				.expression("paid = :paidVal AND createdAt < :createdAtVal")
-				.expressionValues(Map.of(":paidVal", AttributeValue.builder().bool(null).build(), ":createdAtVal",
+				.expression("status = :statusVal AND createdAt < :createdAtVal")
+				.expressionValues(Map.of(":statusVal", AttributeValue.builder().s(PENDING).build(), ":createdAtVal",
 						AttributeValue.builder().s(createdAt.toString()).build()))
 				.build())
 			.build();

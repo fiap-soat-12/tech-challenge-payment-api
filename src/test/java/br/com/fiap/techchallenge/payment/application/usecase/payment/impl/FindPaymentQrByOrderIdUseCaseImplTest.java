@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -51,6 +52,7 @@ class FindPaymentQrByOrderIdUseCaseImplTest {
         assertEquals(payment.getId(), result.getId());
         assertEquals(payment.getAmount(), result.getAmount());
         assertFalse(result.isPaid());
+        assertEquals(PENDING, result.getStatus());
         assertEquals(payment.getExternalPaymentId(), result.getExternalPaymentId());
         assertEquals(payment.getQr(), result.getQr());
         assertEquals(payment.getOrderId(), result.getOrderId());
@@ -74,8 +76,8 @@ class FindPaymentQrByOrderIdUseCaseImplTest {
 	private void buildArranges() {
 		orderId = UUID.randomUUID();
 
-		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), false, UUID.randomUUID(), "QR Code", orderId,
-				LocalDateTime.now(), LocalDateTime.now());
+		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), false, PENDING, UUID.randomUUID(), "QR Code",
+				orderId, LocalDateTime.now(), LocalDateTime.now());
 	}
 
 }

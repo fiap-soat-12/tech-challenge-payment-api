@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record PaymentCreateDTO(UUID orderId, BigDecimal totalAmount) {
 	public PaymentCreateDTO(PaymentOrderCreateDTO dto) {
-		this(dto.orderId(), dto.amount());
+		this(dto.orderId(), dto.totalAmount());
 	}
 }
