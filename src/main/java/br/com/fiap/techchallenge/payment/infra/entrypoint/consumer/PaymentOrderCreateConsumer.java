@@ -3,6 +3,8 @@ package br.com.fiap.techchallenge.payment.infra.entrypoint.consumer;
 import br.com.fiap.techchallenge.payment.application.usecase.payment.CreatePaymentUseCase;
 import br.com.fiap.techchallenge.payment.application.usecase.payment.dto.PaymentCreateDTO;
 import br.com.fiap.techchallenge.payment.infra.entrypoint.consumer.dto.PaymentOrderCreateDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import org.springframework.stereotype.Component;
 
@@ -10,14 +12,16 @@ import org.springframework.stereotype.Component;
 public class PaymentOrderCreateConsumer {
 
 	private final CreatePaymentUseCase createPaymentUseCase;
+	private final ObjectMapper objectMapper;
 
-	public PaymentOrderCreateConsumer(CreatePaymentUseCase createPaymentUseCase) {
+	public PaymentOrderCreateConsumer(CreatePaymentUseCase createPaymentUseCase, ObjectMapper objectMapper) {
 		this.createPaymentUseCase = createPaymentUseCase;
+		this.objectMapper = objectMapper;
 	}
 
 	@SqsListener("${sqs.queue.payment.order.create.consumer}")
-	public void receiveMessage(PaymentOrderCreateDTO dto) {
-		createPaymentUseCase.create(new PaymentCreateDTO(dto));
+	public void receiveMessage(String message) throws JsonProcessingException {
+		createPaymentUseCase.create(new PaymentCreateDTO(objectMapper.readValue(message, PaymentOrderCreateDTO.class)));
 	}
 
 }
