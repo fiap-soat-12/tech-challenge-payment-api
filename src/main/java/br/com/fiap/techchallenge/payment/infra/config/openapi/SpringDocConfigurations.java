@@ -24,15 +24,16 @@ public class SpringDocConfigurations {
 
 	@Bean
 	public OpenAPI customOpenAPI() {
-		OpenAPI openAPI = new OpenAPI().info(new Info().title("Tech Challenge FIAP API").version("v1").description("""
-				API Rest for Tech Challenge of Master's Degree in Software Architecture \n
-				Developed by:\n
-				 - Alexandre Miranda - RM357321\n
-				 - Diego Ceccon - RM357437\n
-				 - Jéssica Rodrigues - RM357218\n
-				 - Rodrigo Sartori - RM358002\n
-				 - Wilton Souza - RM357991\n
-				""").contact(new Contact().name("SOAT 8 Group").email("soat-group@gmail.com")))
+		OpenAPI openAPI = new OpenAPI()
+			.info(new Info().title("Tech Challenge FIAP Payment API").version("v1").description("""
+					Payment API Rest for Tech Challenge of Master's Degree in Software Architecture \n
+					Developed by:\n
+					 - Alexandre Miranda - RM357321\n
+					 - Diego Ceccon - RM357437\n
+					 - Jéssica Rodrigues - RM357218\n
+					 - Rodrigo Sartori - RM358002\n
+					 - Wilton Souza - RM357991\n
+					""").contact(new Contact().name("SOAT 8 Group").email("soat-group@gmail.com")))
 			.components(new Components().schemas(this.generateSchemas()));
 
 		if (apiDocsUrl != null && !apiDocsUrl.isEmpty()) {
