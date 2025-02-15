@@ -16,7 +16,7 @@ public class Payment {
 
 	private boolean isPaid;
 
-	private PaymentStatusEnum status;
+	private PaymentStatusEnum paymentStatus;
 
 	private final UUID externalPaymentId;
 
@@ -28,12 +28,12 @@ public class Payment {
 
 	private final LocalDateTime updatedAt;
 
-	public Payment(UUID id, BigDecimal amount, Boolean isPaid, PaymentStatusEnum status, UUID externalPaymentId,
+	public Payment(UUID id, BigDecimal amount, Boolean isPaid, PaymentStatusEnum paymentStatus, UUID externalPaymentId,
 			String qr, UUID orderId, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.amount = amount;
 		this.isPaid = isPaid;
-		this.status = status;
+		this.paymentStatus = paymentStatus;
 		this.externalPaymentId = externalPaymentId;
 		this.qr = qr;
 		this.orderId = orderId;
@@ -48,7 +48,7 @@ public class Payment {
 
 	public Payment setPaid(Boolean isPaid, PaymentStatusEnum status) {
 		this.isPaid = isPaid;
-		this.status = status;
+		this.paymentStatus = status;
 		return this;
 	}
 
@@ -64,8 +64,8 @@ public class Payment {
 		return isPaid;
 	}
 
-	public PaymentStatusEnum getStatus() {
-		return status;
+	public PaymentStatusEnum getPaymentStatus() {
+		return paymentStatus;
 	}
 
 	public UUID getExternalPaymentId() {
@@ -88,8 +88,8 @@ public class Payment {
 		return updatedAt;
 	}
 
-	public void setStatus(PaymentStatusEnum status) {
-		this.status = status;
+	public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+		this.paymentStatus = paymentStatus;
 	}
 
 }

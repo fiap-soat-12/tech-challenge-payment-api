@@ -1,7 +1,9 @@
 package br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MpPaymentGetResponse {
 
 	@JsonProperty("date_approved")

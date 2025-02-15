@@ -33,7 +33,7 @@ class PaymentEntityTest {
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
 		assertFalse(paymentEntity.isPaid());
-		assertEquals(payment.getStatus(), paymentEntity.getStatus());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -50,7 +50,7 @@ class PaymentEntityTest {
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
 		assertFalse(paymentEntity.isPaid());
-		assertEquals(payment.getStatus(), paymentEntity.getStatus());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -68,7 +68,7 @@ class PaymentEntityTest {
 		assertEquals(paymentEntity.getId(), newPayment.getId());
 		assertEquals(paymentEntity.getAmount(), newPayment.getAmount());
 		assertFalse(paymentEntity.isPaid());
-		assertEquals(paymentEntity.getStatus(), newPayment.getStatus());
+		assertEquals(paymentEntity.getPaymentStatus(), newPayment.getPaymentStatus());
 		assertEquals(paymentEntity.getExternalPaymentId(), newPayment.getExternalPaymentId());
 		assertEquals(paymentEntity.getQr(), newPayment.getQr());
 		assertEquals(paymentEntity.getOrderId(), newPayment.getOrderId());
@@ -83,7 +83,7 @@ class PaymentEntityTest {
 		paymentEntity.setId(payment.getId());
 		paymentEntity.setAmount(payment.getAmount());
 		paymentEntity.setPaid(payment.isPaid());
-		paymentEntity.setStatus(payment.getStatus());
+		paymentEntity.setPaymentStatus(payment.getPaymentStatus());
 		paymentEntity.setExternalPaymentId(payment.getExternalPaymentId());
 		paymentEntity.setQr(payment.getQr());
 		paymentEntity.setOrderId(payment.getOrderId());
@@ -94,7 +94,7 @@ class PaymentEntityTest {
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
 		assertFalse(paymentEntity.isPaid());
-		assertEquals(payment.getStatus(), paymentEntity.getStatus());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());

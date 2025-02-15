@@ -1,7 +1,6 @@
 package br.com.fiap.techchallenge.payment.infra.entrypoint.controller.openapi;
 
 import br.com.fiap.techchallenge.payment.infra.entrypoint.controller.handler.ErrorsValidateData;
-import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.request.WebHookPaymentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,8 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Tag(name = "Webhook Payment")
 public interface WebhookPaymentControllerOpenApi {
@@ -27,7 +27,6 @@ public interface WebhookPaymentControllerOpenApi {
 			content = @Content(mediaType = "application/json", schema = @Schema(ref = "ProblemDto")))
 	@ApiResponse(responseCode = "500", description = "Internal Server Error Response",
 			content = @Content(mediaType = "application/json", schema = @Schema(ref = "ProblemDto")))
-	ResponseEntity<Void> handleWebhook(@RequestParam("data.id") String dataId, @RequestParam("type") String type,
-			@RequestBody WebHookPaymentRequest request);
+	ResponseEntity<Void> handleWebhook(@RequestParam("id") List<String> id, @RequestParam("topic") List<String> topic);
 
 }

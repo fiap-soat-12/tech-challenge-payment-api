@@ -9,8 +9,6 @@ import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.response
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.response.MpPaymentQRResponse;
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.PaymentClientController;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -24,16 +22,13 @@ public class PaymentClientImpl implements PaymentClient {
 
 	@Override
 	public String generateQrCode(PaymentClientDTO dto) {
-		var notificationUrl = getHostInfo() + "/v1/webhook-payment";
-		// var notificationUrl = "https://soat-app-1.free.beeceptor.com";
-
 		var request = new MpPaymentQRRequest(dto.getDescription(), dto.getExpirationDate(), dto.getExternalReference(),
 				dto.getItems()
 					.stream()
 					.map(item -> new MpPaymentItemQRRequest(item.getTitle(), item.getUnitPrice(), item.getQuantity(),
 							item.getUnitMeasure(), item.getTotalAmount()))
 					.collect(toList()),
-				dto.getTitle(), dto.getTotalAmount(), notificationUrl);
+				dto.getTitle(), dto.getTotalAmount());
 
 		MpPaymentQRResponse response = paymentClientController.createQr(request);
 
@@ -47,10 +42,6 @@ public class PaymentClientImpl implements PaymentClient {
 		MpPaymentGetResponse response = paymentClientController.getPayment(dataId);
 
 		return new PaymentStatusClientDTO(response.getExternalReference(), response.getId(), response.getStatus());
-	}
-
-	private String getHostInfo() {
-		return ServletUriComponentsBuilder.fromCurrentRequestUri().replacePath(null).toUriString();
 	}
 
 }

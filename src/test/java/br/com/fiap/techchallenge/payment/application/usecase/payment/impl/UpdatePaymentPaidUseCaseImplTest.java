@@ -4,7 +4,6 @@ import br.com.fiap.techchallenge.payment.application.exceptions.DoesNotExistExce
 import br.com.fiap.techchallenge.payment.application.gateway.client.PaymentClient;
 import br.com.fiap.techchallenge.payment.application.persistence.PaymentPersistence;
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
-import br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum;
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.dto.PaymentStatusClientDTO;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.OrderStatusUpdateProducer;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.dto.OrderStatusUpdateDTO;
@@ -125,7 +124,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 	@Test
 	@DisplayName("Should Update Order Status")
 	void shouldUpdateOrderStatus() {
-		payment.setStatus(FINISHED);
+		payment.setPaymentStatus(FINISHED);
 
 		when(persistence.findByStatusIsPendingAndCreatedAtBefore(any(LocalDateTime.class)))
 			.thenReturn(List.of(payment));

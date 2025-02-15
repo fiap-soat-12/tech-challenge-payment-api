@@ -52,7 +52,7 @@ class FindPaymentQrByOrderIdUseCaseImplTest {
         assertEquals(payment.getId(), result.getId());
         assertEquals(payment.getAmount(), result.getAmount());
         assertFalse(result.isPaid());
-        assertEquals(PENDING, result.getStatus());
+        assertEquals(PENDING, result.getPaymentStatus());
         assertEquals(payment.getExternalPaymentId(), result.getExternalPaymentId());
         assertEquals(payment.getQr(), result.getQr());
         assertEquals(payment.getOrderId(), result.getOrderId());

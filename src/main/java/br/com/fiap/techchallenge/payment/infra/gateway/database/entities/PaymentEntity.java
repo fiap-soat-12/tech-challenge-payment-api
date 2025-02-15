@@ -18,7 +18,7 @@ public class PaymentEntity {
 
 	private boolean isPaid;
 
-	private PaymentStatusEnum status;
+	private PaymentStatusEnum paymentStatus;
 
 	private UUID externalPaymentId;
 
@@ -37,7 +37,7 @@ public class PaymentEntity {
 		this.id = payment.getId();
 		this.amount = payment.getAmount();
 		this.isPaid = payment.isPaid();
-		this.status = payment.getStatus();
+		this.paymentStatus = payment.getPaymentStatus();
 		this.externalPaymentId = payment.getExternalPaymentId();
 		this.qr = payment.getQr();
 		this.orderId = payment.getOrderId();
@@ -49,7 +49,7 @@ public class PaymentEntity {
 		this.id = payment.getId();
 		this.amount = payment.getAmount();
 		this.isPaid = payment.isPaid();
-		this.status = payment.getStatus();
+		this.paymentStatus = payment.getPaymentStatus();
 		this.externalPaymentId = payment.getExternalPaymentId();
 		this.qr = payment.getQr();
 		this.orderId = payment.getOrderId();
@@ -59,7 +59,7 @@ public class PaymentEntity {
 	}
 
 	public Payment toPayment() {
-		return new Payment(id, amount, isPaid, status, externalPaymentId, qr, orderId, createdAt, updatedAt);
+		return new Payment(id, amount, isPaid, paymentStatus, externalPaymentId, qr, orderId, createdAt, updatedAt);
 	}
 
 	@DynamoDbPartitionKey
@@ -75,8 +75,8 @@ public class PaymentEntity {
 		return isPaid;
 	}
 
-	public PaymentStatusEnum getStatus() {
-		return status;
+	public PaymentStatusEnum getPaymentStatus() {
+		return paymentStatus;
 	}
 
 	public UUID getExternalPaymentId() {
@@ -111,8 +111,8 @@ public class PaymentEntity {
 		isPaid = paid;
 	}
 
-	public void setStatus(PaymentStatusEnum status) {
-		this.status = status;
+	public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+		this.paymentStatus = paymentStatus;
 	}
 
 	public void setExternalPaymentId(UUID externalPaymentId) {

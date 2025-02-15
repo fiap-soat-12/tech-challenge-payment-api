@@ -7,6 +7,8 @@ import br.com.fiap.techchallenge.payment.application.usecase.payment.UpdatePayme
 import br.com.fiap.techchallenge.payment.domain.models.Payment;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.OrderStatusUpdateProducer;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.dto.OrderStatusUpdateDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatu
 
 @Transactional
 public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
+
+	private static final Logger log = LoggerFactory.getLogger(UpdatePaymentPaidUseCaseImpl.class);
 
 	private final PaymentPersistence persistence;
 
@@ -41,9 +45,12 @@ public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 		var paymentFound = persistence.findByExternalPaymentId(externalId)
 			.orElseThrow(() -> new DoesNotExistException("Payment does no exist!"));
 
+		log.info("Updating payment with id: {}", paymentData.getExternalReference());
+
 		if (paymentData.getStatus().equals("approved")) {
 			paymentFound.setPaid(true, FINISHED);
 			persistence.update(paymentFound);
+			log.info("Payment finished : {}", paymentFound.getOrderId());
 			producer.sendMessage(new OrderStatusUpdateDTO(paymentFound.getOrderId(), paymentFound.isPaid()));
 		}
 
@@ -58,8 +65,9 @@ public class UpdatePaymentPaidUseCaseImpl implements UpdatePaymentPaidUseCase {
 			.toLocalDateTime();
 		List<Payment> paymentsFound = persistence.findByStatusIsPendingAndCreatedAtBefore(thirtyMinutesAgo);
 		paymentsFound.forEach(payment -> {
-			payment.setStatus(FINISHED);
+			payment.setPaymentStatus(FINISHED);
 			persistence.update(payment);
+			log.info("Payment scheduled finished : {}", payment.getOrderId());
 			producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid()));
 		});
 
