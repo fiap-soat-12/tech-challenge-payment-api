@@ -90,6 +90,19 @@ http://localhost:8100/payment/swagger-ui/index.html
 1. Busca do **QR** do pedido (GET) `/payment/v1/qrs/{orderId}`
 2. **WebHook** de pagamento (POST) `/payment/v1/webhook-payment`
 
+## ✅ Cobertura de Testes
+
+### Testes Unitarios
+![unit-test](./assets/unit_test_payment.png)
+
+### Scan do Sonar
+![Sonar_1](./assets/sonar_payment_1.png)
+![Sonar_1](./assets/sonar_payment_2.png)
+![Sonar_1](./assets/sonar_payment_3.png)
+
+### JaCoCo
+![JaCoCo](./coverage/tech-challenge-payment-api.html)
+
 ## 🎲 Seeds
 
 Este projeto utiliza **seeds** para criar a tabela e configurar as filas de forma local usando o localstack foi utilizado um arquivo bash.
