@@ -101,7 +101,8 @@ http://localhost:8100/payment/swagger-ui/index.html
 ![Sonar_1](./assets/sonar_payment_3.png)
 
 ### JaCoCo
-![JaCoCo](./coverage/tech-challenge-payment-api.html)
+Cobertura do Projeto usando o JaCoCo: 
+[Link](https://fiap-soat-12.github.io/tech-challenge-payment-api/)
 
 ## 🎲 Seeds
 
