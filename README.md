@@ -92,7 +92,7 @@ http://localhost:8100/payment/swagger-ui/index.html
 
 ## 🎲 Seeds
 
-Este projeto utiliza **seeds** para criar a tabela e as filas usando um arquivo bash.
+Este projeto utiliza **seeds** para criar a tabela e configurar as filas de forma local usando o localstack foi utilizado um arquivo bash.
 ```bash
 .bash/create_setup.sh
 ```
