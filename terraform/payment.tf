@@ -15,10 +15,10 @@ resource "kubernetes_secret" "payment_secret" {
   }
 
   data = {
-    db-table = var.dynamo_db_name
-    aws_access_key_id = var.AWS_ACCESS_KEY_ID
+    db-table              = var.dynamo_db_name
+    aws_access_key_id     = var.AWS_ACCESS_KEY_ID
     aws_secret_access_key = var.AWS_SECRET_ACCESS_KEY
-    aws_session_token = var.AWS_SESSION_TOKEN
+    aws_session_token     = var.AWS_SESSION_TOKEN
   }
 
   type = "Opaque"
@@ -53,8 +53,7 @@ resource "kubernetes_deployment" "payment_deployment" {
 
       spec {
         container {
-          # image             = data.aws_ecr_image.latest_image.image_uri
-          image             = "jskrc/tech-challenge-payment-api:latest"
+          image             = data.aws_ecr_image.latest_image.image_uri
           name              = "tech-challenge-payment-api"
           image_pull_policy = "Always"
 
@@ -172,7 +171,7 @@ resource "kubernetes_deployment" "payment_deployment" {
           }
 
           env {
-            name = "AWS_REGION"
+            name  = "AWS_REGION"
             value = "us-east-1"
           }
         }
