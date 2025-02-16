@@ -1,5 +1,6 @@
 package br.com.fiap.techchallenge.payment.infra.config.openapi;
 
+import br.com.fiap.techchallenge.payment.infra.entrypoint.controller.dto.PaymentQrResponseDTO;
 import br.com.fiap.techchallenge.payment.infra.entrypoint.controller.handler.ProblemDTO;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.Components;
@@ -25,8 +26,8 @@ public class SpringDocConfigurations {
 	@Bean
 	public OpenAPI customOpenAPI() {
 		OpenAPI openAPI = new OpenAPI()
-			.info(new Info().title("Tech Challenge FIAP Payment API").version("v1").description("""
-					Payment API Rest for Tech Challenge of Master's Degree in Software Architecture \n
+			.info(new Info().title("Tech Challenge FIAP - Payment API").version("v1").description("""
+					Microservice Payment for Tech Challenge of Master's Degree in Software Architecture \n
 					Developed by:\n
 					 - Alexandre Miranda - RM357321\n
 					 - Diego Ceccon - RM357437\n
@@ -48,11 +49,13 @@ public class SpringDocConfigurations {
 		final Map<String, Schema> schemaMap = new HashMap<>();
 
 		Map<String, Schema> problemSchema = ModelConverters.getInstance().read(ProblemDTO.class);
+		Map<String, Schema> paymentQrResponseDTO = ModelConverters.getInstance().read(PaymentQrResponseDTO.class);
 
 		Schema errorsValidateDataArraySchema = new ArraySchema()
 			.items(new Schema<>().$ref("#/components/schemas/ErrorsValidateData"));
 
 		schemaMap.putAll(problemSchema);
+		schemaMap.putAll(paymentQrResponseDTO);
 		schemaMap.put("ErrorsValidateDataList", errorsValidateDataArraySchema);
 
 		return schemaMap;
