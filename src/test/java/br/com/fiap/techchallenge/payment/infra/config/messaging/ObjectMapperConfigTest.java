@@ -1,28 +1,28 @@
 package br.com.fiap.techchallenge.payment.infra.config.messaging;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class SqsConfigTest {
+class ObjectMapperConfigTest {
 
 	@InjectMocks
-	private SqsConfig sqsConfig;
+	private ObjectMapperConfig objectMapperConfig;
 
 	@Test
-	@DisplayName("Should Create a Singleton Instance Of SqsAsyncClient")
-	void shouldCreateSingletonInstanceOfSqsAsyncClient() {
-		var sqsAsyncClient = sqsConfig.sqsAsyncClient();
+	@DisplayName("Should Create a Singleton Instance Of ObjectMapper")
+	void shouldCreateSingletonInstanceOfObjectMapper() {
+		var objectMapper = objectMapperConfig.objectMapper();
 
-		assertNotNull(sqsAsyncClient);
-		assertInstanceOf(SqsAsyncClient.class, sqsAsyncClient);
+		assertNotNull(objectMapper);
+		assertInstanceOf(ObjectMapper.class, objectMapper);
 	}
 
 }

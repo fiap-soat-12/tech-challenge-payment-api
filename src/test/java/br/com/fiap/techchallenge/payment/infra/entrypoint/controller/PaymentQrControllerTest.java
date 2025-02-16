@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.FINISHED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ class PaymentQrControllerTest {
     }
 
 	private void buildArranges() {
-		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), true, UUID.randomUUID(),
+		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), true, FINISHED, UUID.randomUUID(),
 				"00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-426655440000 5204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***63041D3D",
 				UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now());
 		paymentQrResponseDTO = new PaymentQrResponseDTO(payment.getQr());

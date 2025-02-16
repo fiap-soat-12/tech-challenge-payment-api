@@ -5,6 +5,8 @@ import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.request.
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.response.MpPaymentGetResponse;
 import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.response.MpPaymentQRResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ import java.net.http.HttpResponse;
 
 @Component
 public class PaymentClientController {
+
+	private static final Logger log = LoggerFactory.getLogger(PaymentClientController.class);
 
 	@Value("${external.api.token}")
 	private String TOKEN;
@@ -41,18 +45,22 @@ public class PaymentClientController {
 	}
 
 	public MpPaymentQRResponse createQr(MpPaymentQRRequest payload) {
+		log.info("POST request to order {}", payload.getExternalReference());
+
 		String url = baseUri + CREATE_QR_URL;
 		HttpRequest request = buildPostRequest(url, payload.toJson());
 
 		return request(request, MpPaymentQRResponse.class, 201);
 	}
 
-	public MpPaymentGetResponse getPayment(String dataId) {
-		if (dataId == null || dataId.isEmpty()) {
+	public MpPaymentGetResponse getPayment(String id) {
+		log.info("GET request to id {}", id);
+
+		if (id == null || id.isEmpty()) {
 			throw new ApiClientRequestException("Data ID cannot be null or empty");
 		}
 
-		String url = baseUri + GET_PAYMENT_URL + dataId;
+		String url = baseUri + GET_PAYMENT_URL + id;
 		HttpRequest request = buildGetRequest(url);
 
 		return request(request, MpPaymentGetResponse.class, 200);
@@ -84,6 +92,7 @@ public class PaymentClientController {
 				return objectMapper.readValue(response.body(), responseType);
 			}
 			else {
+				log.error(response.body());
 				throw new ApiClientRequestException("Request error: Status code " + response.statusCode());
 			}
 		}

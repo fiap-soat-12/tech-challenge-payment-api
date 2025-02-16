@@ -30,18 +30,14 @@ public class MpPaymentQRRequest {
 	@JsonProperty("total_amount")
 	private BigDecimal totalAmount;
 
-	@JsonProperty("notification_url")
-	private String notificationUrl;
-
 	public MpPaymentQRRequest(String description, OffsetDateTime expirationDate, UUID externalReference,
-			List<MpPaymentItemQRRequest> items, String title, BigDecimal totalAmount, String notificationUrl) {
+			List<MpPaymentItemQRRequest> items, String title, BigDecimal totalAmount) {
 		this.description = description;
 		this.expirationDate = expirationDate;
 		this.externalReference = externalReference;
 		this.items = items;
 		this.title = title;
 		this.totalAmount = totalAmount;
-		this.notificationUrl = notificationUrl;
 	}
 
 	public String getDescription() {
@@ -66,10 +62,6 @@ public class MpPaymentQRRequest {
 
 	public BigDecimal getTotalAmount() {
 		return totalAmount;
-	}
-
-	public String getNotificationUrl() {
-		return notificationUrl;
 	}
 
 	public String toJson() {

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.FINISHED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -129,29 +130,29 @@ class PaymentPersistenceImplTest {
 	void shouldReturnListOfPaymentsWhenThePainIsFalseAndCreatedAtIsLessThanNow() {
 		var paymentEntities = List.of(paymentEntity, paymentEntity);
 
-		when(repository.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(paymentEntities);
+		when(repository.findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(paymentEntities);
 
-		var result = paymentPersistence.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
+		var result = paymentPersistence.findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt());
 
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		verify(repository).findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
+		verify(repository).findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt());
 	}
 
 	@Test
     @DisplayName("Should return list of payments empty when the pain is false and createdAt is Less than now")
     void shouldReturnListOfPaymentsEmptyWhenThePainIsFalseAndCreatedAtIsLessThanNow() {
-        when(repository.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(List.of());
+        when(repository.findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt())).thenReturn(List.of());
 
-        var result = paymentPersistence.findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
+        var result = paymentPersistence.findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt());
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(repository).findByPaidIsNullAndCreatedAtBefore(payment.getCreatedAt());
+        verify(repository).findByStatusIsPendingAndCreatedAtBefore(payment.getCreatedAt());
     }
 
 	private void buildArranges() {
-		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), true, UUID.randomUUID(), "QR Code",
+		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), true, FINISHED, UUID.randomUUID(), "QR Code",
 				UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now());
 		paymentEntity = new PaymentEntity(payment);
 	}

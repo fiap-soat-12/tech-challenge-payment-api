@@ -55,10 +55,6 @@ class PaymentClientImplTest {
 	@Test
 	@DisplayName("Should Generate QrCode Successfully")
 	void shouldGenerateQrCodeSuccessfully() {
-		mockStatic(ServletUriComponentsBuilder.class);
-
-		when(ServletUriComponentsBuilder.fromCurrentContextPath()).thenReturn(builder);
-		when(builder.toUriString()).thenReturn("https://localhost");
 		when(paymentClientController.createQr(any(MpPaymentQRRequest.class))).thenReturn(mpPaymentQRResponse);
 
 		String result = paymentClientImpl.generateQrCode(paymentClientDTO);

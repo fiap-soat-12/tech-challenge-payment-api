@@ -39,7 +39,7 @@ class PaymentClientControllerTest {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	private Long dataId;
+	private Long id;
 
 	private MpPaymentQRRequest mpPaymentQRRequest;
 
@@ -95,13 +95,13 @@ class PaymentClientControllerTest {
 			.setBody(objectMapper.writeValueAsString(mpPaymentGetResponse))
 			.addHeader("Content-Type", "application/json"));
 
-		MpPaymentGetResponse response = paymentClientController.getPayment(dataId.toString());
+		MpPaymentGetResponse response = paymentClientController.getPayment(id.toString());
 
 		assertNotNull(response);
-		assertEquals(dataId, response.getId());
+		assertEquals(id, response.getId());
 		var recordedRequest = mockWebServer.takeRequest();
 		assertEquals("GET", recordedRequest.getMethod());
-		assertEquals("/get-payment/" + dataId, recordedRequest.getPath());
+		assertEquals("/get-payment/" + id, recordedRequest.getPath());
 	}
 
 	@Test
@@ -137,13 +137,13 @@ class PaymentClientControllerTest {
 			.addHeader("Content-Type", "application/json"));
 
 		ApiClientRequestException exception = assertThrowsExactly(ApiClientRequestException.class,
-				() -> paymentClientController.getPayment(dataId.toString()));
+				() -> paymentClientController.getPayment(id.toString()));
 
 		assertEquals("Request error: Status code 500", exception.getMessage());
 
 		var recordedRequest = mockWebServer.takeRequest();
 		assertEquals("GET", recordedRequest.getMethod());
-		assertEquals("/get-payment/" + dataId, recordedRequest.getPath());
+		assertEquals("/get-payment/" + id, recordedRequest.getPath());
 		assertEquals("application/json", recordedRequest.getHeader("Content-Type"));
 	}
 
@@ -169,18 +169,18 @@ class PaymentClientControllerTest {
 		var title = "FIAP Payment";
 		var description = "FIAP Payment";
 		var amount = new BigDecimal("100.00");
-		dataId = 123456789L;
+		id = 123456789L;
 
 		mpPaymentQRRequest = new MpPaymentQRRequest(description,
 				ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusMinutes(30).toOffsetDateTime(), externalReference,
 				List.of(new MpPaymentItemQRRequest(title, amount.setScale(2, RoundingMode.HALF_UP), 1, "unit", amount)),
-				title, new BigDecimal("100.00"), "http://localhost:8080/v1/webhook-payment");
+				title, new BigDecimal("100.00"));
 
 		mpPaymentQRResponse = new MpPaymentQRResponse("store_id",
 				"00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-426655440000 5204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***63041D3D");
 
 		mpPaymentGetResponse = new MpPaymentGetResponse("2023-10-23T12:34:56Z", "2023-09-13T09:12:34Z",
-				"2023-10-28T15:45:12Z", description, externalReference.toString(), dataId, "payment_method_id",
+				"2023-10-28T15:45:12Z", description, externalReference.toString(), id, "payment_method_id",
 				"payment_type_id", "approved", "approved", "store_id", amount.doubleValue());
 	}
 

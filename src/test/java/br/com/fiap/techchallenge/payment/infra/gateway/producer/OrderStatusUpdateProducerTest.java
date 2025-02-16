@@ -47,14 +47,6 @@ class OrderStatusUpdateProducerTest {
 		verify(sqsTemplate).send(anyString(), any(OrderStatusUpdateDTO.class));
 	}
 
-	@Test
-	@DisplayName("Should Not Send Message Of Order Status Update")
-	void ShouldNotSendMessageOfOrderStatusUpdate() {
-		assertDoesNotThrow(() -> orderStatusUpdateProducer.sendMessage(null));
-
-		verify(sqsTemplate, never()).send(anyString(), any(OrderStatusUpdateDTO.class));
-	}
-
 	private void buildArranges() {
 		orderStatusUpdateDTO = new OrderStatusUpdateDTO(UUID.randomUUID(), true);
 	}

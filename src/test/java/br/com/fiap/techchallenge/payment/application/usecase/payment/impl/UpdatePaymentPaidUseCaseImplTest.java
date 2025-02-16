@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.FINISHED;
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,7 +70,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 		when(client.verifyPayment(anyString())).thenReturn(paymentStatusClientDTO);
 		when(persistence.findByExternalPaymentId(any(UUID.class))).thenReturn(Optional.of(payment));
 
-		payment.setIsPaid(true);
+		payment.setPaid(true, FINISHED);
 
 		when(persistence.update(any(Payment.class))).thenReturn(payment);
 
@@ -122,7 +124,10 @@ class UpdatePaymentPaidUseCaseImplTest {
 	@Test
 	@DisplayName("Should Update Order Status")
 	void shouldUpdateOrderStatus() {
-		when(persistence.findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class))).thenReturn(List.of(payment));
+		payment.setPaymentStatus(FINISHED);
+
+		when(persistence.findByStatusIsPendingAndCreatedAtBefore(any(LocalDateTime.class)))
+			.thenReturn(List.of(payment));
 
 		assertDoesNotThrow(
 				() -> producer.sendMessage(new OrderStatusUpdateDTO(payment.getOrderId(), payment.isPaid())));
@@ -130,7 +135,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 		updatePaymentPaidUseCase.updateOrderStatus();
 
 		assertFalse(payment.isPaid());
-		verify(persistence).findByPaidIsNullAndCreatedAtBefore(any(LocalDateTime.class));
+		verify(persistence).findByStatusIsPendingAndCreatedAtBefore(any(LocalDateTime.class));
 		verify(producer, times(2)).sendMessage(any(OrderStatusUpdateDTO.class));
 	}
 
@@ -141,7 +146,7 @@ class UpdatePaymentPaidUseCaseImplTest {
 		var totalAmount = new BigDecimal("100.00");
 		var orderId = UUID.randomUUID();
 
-		payment = new Payment(UUID.randomUUID(), totalAmount, false, externalPaymentId, "QR Code", orderId,
+		payment = new Payment(UUID.randomUUID(), totalAmount, false, PENDING, externalPaymentId, "QR Code", orderId,
 				LocalDateTime.now(), LocalDateTime.now());
 	}
 

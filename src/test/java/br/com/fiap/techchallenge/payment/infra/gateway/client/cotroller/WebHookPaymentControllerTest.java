@@ -2,9 +2,6 @@ package br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller;
 
 import br.com.fiap.techchallenge.payment.application.usecase.payment.UpdatePaymentPaidUseCase;
 import br.com.fiap.techchallenge.payment.infra.entrypoint.controller.handler.ControllerAdvice;
-import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.request.WebHookPaymentDataRequest;
-import br.com.fiap.techchallenge.payment.infra.gateway.client.cotroller.request.WebHookPaymentRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,11 +32,9 @@ class WebHookPaymentControllerTest {
 
 	private final String baseUrl = "/v1/webhook-payment";
 
-	private String dataId;
+	private String id;
 
-	private String type;
-
-	private WebHookPaymentRequest webHookPaymentRequest;
+	private String topic;
 
 	@BeforeEach
 	void setUp() {
@@ -52,77 +47,15 @@ class WebHookPaymentControllerTest {
 	void shouldHandleWebhookAndUpdatePaymentStatus() throws Exception {
 		assertDoesNotThrow(() -> updatePaymentPaidUseCase.updatePaymentByDataId(anyString()));
 
-		mockMvc
-			.perform(post(baseUrl).param("data.id", dataId)
-				.param("type", type)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(webHookPaymentRequest)))
+		mockMvc.perform(post(baseUrl).param("id", id).param("topic", topic).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
 
 		verify(updatePaymentPaidUseCase, times(2)).updatePaymentByDataId(anyString());
 	}
 
-	@Test
-	@DisplayName("Should Not Update Payment Status When Data ID and Type Does Not Match")
-	void shouldNotUpdatePaymentStatusWhenDataIdAndTypeDoesNotMatch() throws Exception {
-		dataId = "67847869771";
-		type = "payment.type";
-
-		mockMvc
-			.perform(post(baseUrl).param("data.id", dataId)
-				.param("type", type)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(webHookPaymentRequest)))
-			.andExpect(status().isNoContent());
-
-		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
-	}
-
-	@Test
-	@DisplayName("Should Not Update Payment Status When Data ID Does Not Match")
-	void shouldNotUpdatePaymentStatusWhenDataIdDoesNotMatch() throws Exception {
-		dataId = "67847869771";
-
-		mockMvc
-			.perform(post(baseUrl).param("data.id", dataId)
-				.param("type", type)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(webHookPaymentRequest)))
-			.andExpect(status().isNoContent());
-
-		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
-	}
-
-	@Test
-	@DisplayName("Should Not Update Payment Status When Type Does Not Match")
-	void shouldNotUpdatePaymentStatusWhenTypeDoesNotMatch() throws Exception {
-		type = "payment.type";
-
-		mockMvc
-			.perform(post(baseUrl).param("data.id", dataId)
-				.param("type", type)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(webHookPaymentRequest)))
-			.andExpect(status().isNoContent());
-
-		verify(updatePaymentPaidUseCase, never()).updatePaymentByDataId(anyString());
-	}
-
 	private void buildArranges() {
-		dataId = "87847869771";
-		type = "payment";
-		webHookPaymentRequest = new WebHookPaymentRequest("payment.created", "v1",
-				new WebHookPaymentDataRequest(dataId), "2024-09-17T23:29:26Z", 115915708642L, true, "payment",
-				"1986357239");
-	}
-
-	public static String asJsonString(final Object obj) {
-		try {
-			return new ObjectMapper().writeValueAsString(obj);
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		id = "87847869771";
+		topic = "payment";
 	}
 
 }

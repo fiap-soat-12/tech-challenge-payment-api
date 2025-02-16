@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,7 +32,8 @@ class PaymentEntityTest {
 		assertNotNull(paymentEntity);
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
-		assertNull(paymentEntity.isPaid());
+		assertFalse(paymentEntity.isPaid());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -47,7 +49,8 @@ class PaymentEntityTest {
 		assertNotNull(paymentEntity);
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
-		assertNull(paymentEntity.isPaid());
+		assertFalse(paymentEntity.isPaid());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -64,7 +67,8 @@ class PaymentEntityTest {
 		assertNotNull(newPayment);
 		assertEquals(paymentEntity.getId(), newPayment.getId());
 		assertEquals(paymentEntity.getAmount(), newPayment.getAmount());
-		assertNull(paymentEntity.isPaid());
+		assertFalse(paymentEntity.isPaid());
+		assertEquals(paymentEntity.getPaymentStatus(), newPayment.getPaymentStatus());
 		assertEquals(paymentEntity.getExternalPaymentId(), newPayment.getExternalPaymentId());
 		assertEquals(paymentEntity.getQr(), newPayment.getQr());
 		assertEquals(paymentEntity.getOrderId(), newPayment.getOrderId());
@@ -79,6 +83,7 @@ class PaymentEntityTest {
 		paymentEntity.setId(payment.getId());
 		paymentEntity.setAmount(payment.getAmount());
 		paymentEntity.setPaid(payment.isPaid());
+		paymentEntity.setPaymentStatus(payment.getPaymentStatus());
 		paymentEntity.setExternalPaymentId(payment.getExternalPaymentId());
 		paymentEntity.setQr(payment.getQr());
 		paymentEntity.setOrderId(payment.getOrderId());
@@ -88,7 +93,8 @@ class PaymentEntityTest {
 		assertNotNull(paymentEntity);
 		assertEquals(payment.getId(), paymentEntity.getId());
 		assertEquals(payment.getAmount(), paymentEntity.getAmount());
-		assertNull(paymentEntity.isPaid());
+		assertFalse(paymentEntity.isPaid());
+		assertEquals(payment.getPaymentStatus(), paymentEntity.getPaymentStatus());
 		assertEquals(payment.getExternalPaymentId(), paymentEntity.getExternalPaymentId());
 		assertEquals(payment.getQr(), paymentEntity.getQr());
 		assertEquals(payment.getOrderId(), paymentEntity.getOrderId());
@@ -97,7 +103,7 @@ class PaymentEntityTest {
 	}
 
 	private void buildArranges() {
-		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), null, UUID.randomUUID(), "QR Code",
+		payment = new Payment(UUID.randomUUID(), new BigDecimal("100.00"), false, PENDING, UUID.randomUUID(), "QR Code",
 				UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now());
 	}
 

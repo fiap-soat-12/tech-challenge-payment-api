@@ -1,8 +1,12 @@
 package br.com.fiap.techchallenge.payment.domain.models;
 
+import br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static br.com.fiap.techchallenge.payment.domain.models.enums.PaymentStatusEnum.PENDING;
 
 public class Payment {
 
@@ -10,7 +14,9 @@ public class Payment {
 
 	private final BigDecimal amount;
 
-	private Boolean isPaid;
+	private boolean isPaid;
+
+	private PaymentStatusEnum paymentStatus;
 
 	private final UUID externalPaymentId;
 
@@ -22,11 +28,12 @@ public class Payment {
 
 	private final LocalDateTime updatedAt;
 
-	public Payment(UUID id, BigDecimal amount, Boolean isPaid, UUID externalPaymentId, String qr, UUID orderId,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public Payment(UUID id, BigDecimal amount, Boolean isPaid, PaymentStatusEnum paymentStatus, UUID externalPaymentId,
+			String qr, UUID orderId, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.amount = amount;
 		this.isPaid = isPaid;
+		this.paymentStatus = paymentStatus;
 		this.externalPaymentId = externalPaymentId;
 		this.qr = qr;
 		this.orderId = orderId;
@@ -35,8 +42,14 @@ public class Payment {
 	}
 
 	public static Payment create(BigDecimal amount, UUID externalPaymentId, String qr, UUID orderId) {
-		return new Payment(UUID.randomUUID(), amount, null, externalPaymentId, qr, orderId, LocalDateTime.now(),
-				LocalDateTime.now());
+		return new Payment(UUID.randomUUID(), amount, false, PENDING, externalPaymentId, qr, orderId,
+				LocalDateTime.now(), LocalDateTime.now());
+	}
+
+	public Payment setPaid(Boolean isPaid, PaymentStatusEnum status) {
+		this.isPaid = isPaid;
+		this.paymentStatus = status;
+		return this;
 	}
 
 	public UUID getId() {
@@ -47,8 +60,12 @@ public class Payment {
 		return amount;
 	}
 
-	public Boolean isPaid() {
+	public boolean isPaid() {
 		return isPaid;
+	}
+
+	public PaymentStatusEnum getPaymentStatus() {
+		return paymentStatus;
 	}
 
 	public UUID getExternalPaymentId() {
@@ -71,8 +88,8 @@ public class Payment {
 		return updatedAt;
 	}
 
-	public void setIsPaid(Boolean isPaid) {
-		this.isPaid = isPaid;
+	public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+		this.paymentStatus = paymentStatus;
 	}
 
 }

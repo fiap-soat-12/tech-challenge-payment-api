@@ -17,6 +17,6 @@ public interface PaymentPersistence {
 
 	Optional<Payment> findByExternalPaymentId(UUID externalPaymentId);
 
-	List<Payment> findByPaidIsNullAndCreatedAtBefore(LocalDateTime createdAt);
+	List<Payment> findByStatusIsPendingAndCreatedAtBefore(LocalDateTime createdAt);
 
 }
