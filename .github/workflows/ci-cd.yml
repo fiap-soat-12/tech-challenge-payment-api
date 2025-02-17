@@ -29,7 +29,7 @@ jobs:
         run: |
           mvn clean install  # Comando para build e testes com Maven
 
-  scan_sonnar:
+  scan_sonar:
     runs-on: ubuntu-latest
 
     env:
@@ -45,8 +45,11 @@ jobs:
           distribution: 'temurin'
           java-version: '21' # Configuração para Java 21
 
+      - name: Compilar o projeto
+        run: mvn clean install
+
       - name: Rodar análise no SonarQube
-        run: mvn sonar:sonar -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.java.binaries=target/classes
 
   # Job para criação e push da imagem Docker para ECR
   build-and-push-ecr:
