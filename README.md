@@ -106,12 +106,6 @@ http://localhost:8100/payment/swagger-ui/index.html
 Cobertura do Projeto usando o JaCoCo: 
 [Link](https://fiap-soat-12.github.io/tech-challenge-payment-api/)
 
-## 🎲 Seeds
-
-Este projeto utiliza **seeds** para criar a tabela e configurar as filas de forma local usando o localstack foi utilizado um arquivo bash.
-```bash
-.bash/create_setup.sh
-```
 
 ## 📚 Event Storming
 
