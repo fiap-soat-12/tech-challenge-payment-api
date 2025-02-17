@@ -1,6 +1,9 @@
 package br.com.fiap.techchallenge.payment.infra.gateway.producer;
 
+import br.com.fiap.techchallenge.payment.application.exceptions.InvalidStatusUpdateException;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.dto.OrderStatusUpdateDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +20,21 @@ public class OrderStatusUpdateProducer {
 
 	private final SqsTemplate sqsTemplate;
 
-	public OrderStatusUpdateProducer(SqsTemplate sqsTemplate) {
+	private final ObjectMapper objectMapper;
+
+	public OrderStatusUpdateProducer(SqsTemplate sqsTemplate, ObjectMapper objectMapper) {
 		this.sqsTemplate = sqsTemplate;
+		this.objectMapper = objectMapper;
 	}
 
 	public void sendMessage(OrderStatusUpdateDTO dto) {
 		log.info("Producing Order Status Update: {} - {}", dto.orderId(), dto.isPaid());
-		sqsTemplate.send(queue, dto);
+		try {
+			sqsTemplate.send(queue, objectMapper.writeValueAsString(dto));
+		}
+		catch (JsonProcessingException e) {
+			throw new InvalidStatusUpdateException("It was not possible to post message in queue");
+		}
 	}
 
 }

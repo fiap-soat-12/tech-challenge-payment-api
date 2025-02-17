@@ -1,6 +1,9 @@
 package br.com.fiap.techchallenge.payment.infra.gateway.producer;
 
+import br.com.fiap.techchallenge.payment.application.exceptions.InvalidStatusUpdateException;
 import br.com.fiap.techchallenge.payment.infra.gateway.producer.dto.OrderStatusUpdateDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.operations.SendResult;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -24,6 +25,9 @@ class OrderStatusUpdateProducerTest {
 	private SqsTemplate sqsTemplate;
 
 	@Mock
+	private ObjectMapper objectMapper;
+
+	@Mock
 	private SendResult<OrderStatusUpdateDTO> sendResult;
 
 	private OrderStatusUpdateProducer orderStatusUpdateProducer;
@@ -32,19 +36,34 @@ class OrderStatusUpdateProducerTest {
 
 	@BeforeEach
 	public void setUp() {
-		orderStatusUpdateProducer = new OrderStatusUpdateProducer(sqsTemplate);
+		orderStatusUpdateProducer = new OrderStatusUpdateProducer(sqsTemplate, objectMapper);
 		setField(orderStatusUpdateProducer, "queue", "test-queue");
 		this.buildArranges();
 	}
 
 	@Test
 	@DisplayName("Should Send Message Of Order Status Update")
-	void ShouldSendMessageOfOrderStatusUpdate() {
-		when(sqsTemplate.send(anyString(), any(OrderStatusUpdateDTO.class))).thenReturn(sendResult);
+	void ShouldSendMessageOfOrderStatusUpdate() throws JsonProcessingException {
+		orderStatusUpdateProducer.sendMessage(orderStatusUpdateDTO);
 
-		assertDoesNotThrow(() -> orderStatusUpdateProducer.sendMessage(orderStatusUpdateDTO));
+		verify(sqsTemplate).send("test-queue", objectMapper.writeValueAsString(orderStatusUpdateDTO));
+		verify(objectMapper, times(2)).writeValueAsString(orderStatusUpdateDTO);
+	}
 
-		verify(sqsTemplate).send(anyString(), any(OrderStatusUpdateDTO.class));
+	@Test
+	void sendMessage_JsonProcessingException() throws JsonProcessingException {
+		var dto = new OrderStatusUpdateDTO(UUID.randomUUID(), true);
+
+		when(objectMapper.writeValueAsString(dto)).thenThrow(JsonProcessingException.class);
+
+		try {
+			orderStatusUpdateProducer.sendMessage(dto);
+		}
+		catch (InvalidStatusUpdateException e) {
+			// DONothing
+		}
+
+		verify(sqsTemplate, never()).send(anyString(), anyString());
 	}
 
 	private void buildArranges() {
