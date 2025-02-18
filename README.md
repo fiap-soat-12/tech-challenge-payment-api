@@ -10,7 +10,7 @@
 
 ## 💻 Descrição
 
-O **Tech Challenge - Payment API** é um microserviço desenvolvido em **Java** com **Spring Boot**, seguindo os princípios da **Clean Architecture**. Ele é responsável por gerenciar os endpoints de **comunicação com o gateway de pagamento externo** do restaurante e **consulta do QR do pedido** para o pagamento.
+O **Tech Challenge - Payment API** é um microserviço desenvolvido em **Java** com **Spring Boot**, seguindo os princípios da **Clean Architecture**. Ele é responsável por gerenciar os endpoints de **comunicação com o gateway de pagamento externo** do restaurante e **Consulta do QR do pedido** para o pagamento.
 
 ## 🛠 Tecnologias Utilizadas
 
